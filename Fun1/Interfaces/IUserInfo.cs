@@ -2,6 +2,10 @@
 {
     public interface IUserInfo
     {
-        void Moved(int x, int y);
+        int X { get; }
+        int Y { get; }
+        Direction Direction { get; }
+        bool Alive { get; }
+        string Nick { get; }
     }
 }

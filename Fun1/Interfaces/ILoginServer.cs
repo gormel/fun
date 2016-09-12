@@ -2,6 +2,6 @@
 {
     public interface ILoginServer
     {
-        ILobbyServer Login();
+        ILobbyServer Login(string nick);
     }
 }
