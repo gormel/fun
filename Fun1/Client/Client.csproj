@@ -35,10 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SuperCore, Version=0.1.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperCore.0.1.0.2\lib\net452\SuperCore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="SuperJson, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SuperCore.0.1.0.2\lib\net452\SuperJson.dll</HintPath>
       <Private>True</Private>
@@ -63,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="User.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -71,6 +68,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Field.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -103,6 +101,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SuperLib\SuperCore\SuperCore\SuperCore.csproj">
+      <Project>{507cadab-e9cb-42a2-8b8d-f8a12762e396}</Project>
+      <Name>SuperCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
+      <Project>{EBBF8CD9-C10C-4545-8B7B-16211EFC5146}</Project>
+      <Name>Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

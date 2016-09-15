@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Direction.cs" />
     <Compile Include="ILoginServer.cs" />
+    <Compile Include="IObjectInfo.cs" />
     <Compile Include="IRoomServer.cs" />
     <Compile Include="ILobbyServer.cs" />
     <Compile Include="IUserInfo.cs" />

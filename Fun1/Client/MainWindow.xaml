@@ -5,8 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+        Loaded="MainWindow_OnLoaded">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <ItemsControl ItemsSource="{Binding Users}" Grid.Column="0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Width="{Binding Width}" Height="{Binding Height}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
         
+        <StackPanel Orientation="Vertical" Grid.Column="1">
+            <Button Height="21" Click="Connect_Click">Connect</Button>
+            <Button Height="21" Click="Move_Click">Move</Button>
+            <Button Height="21" Click="Left_Click">Left</Button>
+            <Button Height="21" Click="Top_Click">Top</Button>
+            <Button Height="21" Click="Right_Click">Right</Button>
+            <Button Height="21" Click="Bottom_Click">Bottom</Button>
+        </StackPanel>
     </Grid>
 </Window>

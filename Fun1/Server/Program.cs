@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Interfaces;
 using SuperCore.Core;
 
 namespace Server
@@ -9,7 +10,11 @@ namespace Server
         {
             var server = new SuperServer();
 
+            server.Register<ILoginServer>(new LoginServer());
+
             var listen = server.Listen(666);
+
+            listen.Wait();
         }
     }
 }

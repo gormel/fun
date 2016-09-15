@@ -19,7 +19,7 @@ namespace Server
         public string Nick { get; set; }
         public IRoomServer Join()
         {
-            mLobby.Room.
+            return mLobby.Room.CreateServer(Nick);
         }
     }
 }
