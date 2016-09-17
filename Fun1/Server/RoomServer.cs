@@ -26,7 +26,9 @@ namespace Server
                 X = 0,
                 Y = 0
             };
-            
+
+            mRoom.RoomServers.Add(this);
+            SendUpdated();
         }
 
         public string Nick { get; }

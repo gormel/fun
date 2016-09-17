@@ -13,7 +13,7 @@ namespace Server
             server.Register<ILoginServer>(new LoginServer());
 
             var listen = server.Listen(666);
-
+            
             listen.Wait();
         }
     }

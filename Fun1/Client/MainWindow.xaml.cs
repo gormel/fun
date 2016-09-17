@@ -2,6 +2,9 @@
 using System.Windows;
 using Interfaces;
 using SuperCore.Core;
+using System.Threading;
+using System.Windows.Threading;
+using SuperCore.Async.SyncContext;
 
 namespace Client
 {
@@ -10,13 +13,16 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly SuperClient mClient = new SuperClient();
+        private readonly SuperClient mClient;
+        
         private ILoginServer mLoginServer;
         private IRoomServer mRoom;
 
         public MainWindow()
         {
             InitializeComponent();
+            
+            mClient = new SuperClient(new SuperWPFSyncContext());
         }
 
         private void Move_Click(object sender, RoutedEventArgs e)
