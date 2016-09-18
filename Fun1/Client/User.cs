@@ -14,7 +14,7 @@ namespace Client
         private int mX;
         private int mY;
         private float mDirection;
-        private Brush mColor;
+        private string mSkinImage = "GrayTank.png";
 
         public int X
         {
@@ -46,12 +46,12 @@ namespace Client
             }
         }
 
-        public Brush Color
+        public string SkinImage
         {
-            get { return mColor; }
+            get { return mSkinImage; }
             set
             {
-                mColor = value;
+                mSkinImage = value;
                 OnPropertyChanged();
             }
         }

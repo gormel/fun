@@ -28,7 +28,11 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Width="{Binding Width}" Height="{Binding Height}"/>
+                    <Image Source="{Binding SkinImage}" Width="{Binding Width}" Height="{Binding Height}">
+                        <Image.LayoutTransform>
+                            <RotateTransform Angle="{Binding Direction}" />
+                        </Image.LayoutTransform>
+                    </Image>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

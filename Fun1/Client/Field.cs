@@ -35,11 +35,10 @@ namespace Client
 
             user.Nick = obj.Nick;
             user.X = obj.X * user.Width;
-            user.Y = obj.Y * user.Height;
-            user.Color = !obj.Alive
-                ? new SolidColorBrush(Colors.Gray)
-                : obj.Nick == mRoomServer.Me.Nick ? new SolidColorBrush(Colors.Green) : 
-                new SolidColorBrush(Colors.Red);
+            user.Y = -obj.Y * user.Height;
+            user.SkinImage = !obj.Alive ? "GrayTank.png": 
+                         obj.Nick == mRoomServer.Me.Nick ? "GreenTank.png" : 
+                         "RedTank.png";
 
             switch (obj.Direction)
             {

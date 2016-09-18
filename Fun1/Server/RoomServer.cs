@@ -29,6 +29,10 @@ namespace Server
 
             mRoom.RoomServers.Add(this);
             SendUpdated();
+            foreach (var roomServer in mRoom.RoomServers)
+            {
+                UserUpdated?.Invoke(roomServer.User);
+            }
         }
 
         public string Nick { get; }
