@@ -67,5 +67,38 @@ namespace Client
 
             DataContext = field;
         }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (mRoom == null)
+                return;
+
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.Up:
+                    Move(Direction.Up);
+                    break;
+                case System.Windows.Input.Key.Right:
+                    Move(Direction.Right);
+                    break;
+                case System.Windows.Input.Key.Down:
+                    Move(Direction.Down);
+                    break;
+                case System.Windows.Input.Key.Left:
+                    Move(Direction.Left);
+                    break;
+            }
+        }
+
+        private void Move(Direction moveDirection)
+        {
+            if (mRoom.Me.Direction == moveDirection)
+            {
+                mRoom.Move();
+                return;
+            }
+
+            mRoom.Rotate(moveDirection);
+        }
     }
 }

@@ -40,21 +40,7 @@ namespace Client
                          obj.Nick == mRoomServer.Me.Nick ? "GreenTank.png" : 
                          "RedTank.png";
 
-            switch (obj.Direction)
-            {
-                case Direction.Up:
-                    user.Direction = 0;
-                    break;
-                case Direction.Right:
-                    user.Direction = 90;
-                    break;
-                case Direction.Down:
-                    user.Direction = 180;
-                    break;
-                case Direction.Left:
-                    user.Direction = 270;
-                    break;
-            }
+            user.Direction = (int)obj.Direction * 90;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
