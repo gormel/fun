@@ -13,34 +13,13 @@ namespace Client
 {
     public class Field : INotifyPropertyChanged
     {
-        public ObservableCollection<User> Users { get; } = new ObservableCollection<User>(); 
+        public ObservableCollection<User> Users { get; } = new ObservableCollection<User>();
 
-        private readonly IRoomServer mRoomServer;
-        
-        public Field(IRoomServer roomServer)
+        public IRoomServer RoomServer { get; }
+
+        public Field(ILobbyServer lobbyServer)
         {
-            mRoomServer = roomServer;
-            mRoomServer.UserUpdated += MRoomServer_UserUpdated;
-            MRoomServer_UserUpdated(mRoomServer.Me);
-        }
-
-        private void MRoomServer_UserUpdated(IUserInfo obj)
-        {
-            var user = Users.FirstOrDefault(u => u.Nick == obj.Nick);
-            if (user == null)
-            {
-                user = new User();
-                Users.Add(user);
-            }
-
-            user.Nick = obj.Nick;
-            user.X = obj.X * user.Width;
-            user.Y = -obj.Y * user.Height;
-            user.SkinImage = !obj.Alive ? "GrayTank.png": 
-                         obj.Nick == mRoomServer.Me.Nick ? "GreenTank.png" : 
-                         "RedTank.png";
-
-            user.Direction = (int)obj.Direction * 90;
+            RoomServer = lobbyServer.Join(new RoomServerListener(this));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

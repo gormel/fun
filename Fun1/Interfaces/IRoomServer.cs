@@ -5,8 +5,6 @@ namespace Interfaces
 {
     public interface IRoomServer
     {
-        event Action<IUserInfo> UserUpdated;
-
         void Move();
 
         void Rotate(Direction newDiection);

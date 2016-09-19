@@ -45,6 +45,7 @@
     <Compile Include="IObjectInfo.cs" />
     <Compile Include="IRoomServer.cs" />
     <Compile Include="ILobbyServer.cs" />
+    <Compile Include="IRoomServerListener.cs" />
     <Compile Include="IUserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

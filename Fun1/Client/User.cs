@@ -10,10 +10,10 @@ namespace Client
         public int Width { get; } = 30;
         public int Height { get; } = 30;
 
-        private string mNick;
-        private int mX;
-        private int mY;
-        private float mDirection;
+        private string mNick = "";
+        private int mX = 0;
+        private int mY = 0;
+        private float mDirection = 0;
         private string mSkinImage = "GrayTank.png";
 
         public int X

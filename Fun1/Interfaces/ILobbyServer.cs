@@ -2,6 +2,6 @@
 {
     public interface ILobbyServer
     {
-        IRoomServer Join();
+        IRoomServer Join(IRoomServerListener listener);
     }
 }

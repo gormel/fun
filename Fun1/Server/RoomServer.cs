@@ -8,12 +8,14 @@ namespace Server
     class RoomServer : IRoomServer
     {
         private readonly Room mRoom;
+        private readonly IRoomServerListener mListener;
 
         public UserInfo User { get; }
 
-        public RoomServer(Room room, string nick)
+        public RoomServer(Room room, string nick, IRoomServerListener listener)
         {
             mRoom = room;
+            mListener = listener;
             Nick = nick;
 
             User = new UserInfo
@@ -29,13 +31,11 @@ namespace Server
             SendUpdated();
             foreach (var roomServer in mRoom.RoomServers)
             {
-                UserUpdated?.Invoke(roomServer.User);
+                mListener.UserUpdated(roomServer.User);
             }
         }
 
         public string Nick { get; }
-
-        public event Action<IUserInfo> UserUpdated;
 
         public void Move()
         {
@@ -67,7 +67,7 @@ namespace Server
         {
             foreach (var server in mRoom.RoomServers)
             {
-                server.UserUpdated?.Invoke(User);
+                server.mListener.UserUpdated(User);
             }
         }
 

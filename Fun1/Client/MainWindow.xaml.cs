@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using Interfaces;
 using SuperCore.Core;
@@ -60,10 +61,15 @@ namespace Client
             mLoginServer = mClient.GetInstance<ILoginServer>();
 
             var lobby = mLoginServer.Login(Guid.NewGuid().ToString());
+            
+            var field = new Field(lobby);
 
-            mRoom = lobby.Join();
+            mRoom = field.RoomServer;
 
-            var field = new Field(mRoom);
+            //foreach (var user in field.RoomServer.OtherUsers.ToList())
+            //{
+            //    listener.UserUpdated(user);
+            //}
 
             DataContext = field;
         }

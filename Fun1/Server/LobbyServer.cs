@@ -17,9 +17,9 @@ namespace Server
         }
 
         public string Nick { get; set; }
-        public IRoomServer Join()
+        public IRoomServer Join(IRoomServerListener listener)
         {
-            return mLobby.Room.CreateServer(Nick);
+            return mLobby.Room.CreateServer(Nick, listener);
         }
     }
 }
