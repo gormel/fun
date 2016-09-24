@@ -23,7 +23,7 @@ namespace Client
         {
             InitializeComponent();
             
-            mClient = new SuperClient(new SuperWPFSyncContext());
+            mClient = new SuperClient(new SuperWpfSyncContext());
         }
 
         private void Move_Click(object sender, RoutedEventArgs e)
