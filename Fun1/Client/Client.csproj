@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LaserFire.cs" />
     <Compile Include="RoomServerListener.cs" />
     <Compile Include="User.cs" />
     <Page Include="MainWindow.xaml">

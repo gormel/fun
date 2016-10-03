@@ -9,7 +9,11 @@ namespace Interfaces
 
         void Rotate(Direction newDiection);
 
-        IEnumerable<IUserInfo> OtherUsers { get; }  
+        void Fire();
+
+        IEnumerable<IUserInfo> OtherUsers { get; }
+
+        void AddListener(IRoomServerListener listener);
 
         IUserInfo Me { get; }
     }

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using Interfaces;
 using SuperCore.Core;
 using System.Threading;
+using System.Windows.Input;
 using System.Windows.Threading;
 using SuperCore.Async.SyncContext;
 
@@ -53,11 +55,15 @@ namespace Client
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            mClient.Connect("127.0.0.1", 666);
         }
 
+        bool connected = false;
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
+            if (connected)
+                return;
+            connected = true;
+            mClient.Connect("127.0.0.1", 666);
             mLoginServer = mClient.GetInstance<ILoginServer>();
 
             var lobby = mLoginServer.Login(Guid.NewGuid().ToString());
@@ -66,32 +72,31 @@ namespace Client
 
             mRoom = field.RoomServer;
 
-            //foreach (var user in field.RoomServer.OtherUsers.ToList())
-            //{
-            //    listener.UserUpdated(user);
-            //}
-
             DataContext = field;
         }
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            Trace.WriteLine("KeyDown");
             if (mRoom == null)
                 return;
 
             switch (e.Key)
             {
-                case System.Windows.Input.Key.Up:
+                case Key.Up:
                     Move(Direction.Up);
                     break;
-                case System.Windows.Input.Key.Right:
+                case Key.Right:
                     Move(Direction.Right);
                     break;
-                case System.Windows.Input.Key.Down:
+                case Key.Down:
                     Move(Direction.Down);
                     break;
-                case System.Windows.Input.Key.Left:
+                case Key.Left:
                     Move(Direction.Left);
+                    break;
+                case Key.Space:
+                    mRoom.Fire();
                     break;
             }
         }

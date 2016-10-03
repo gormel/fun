@@ -9,5 +9,7 @@ namespace Interfaces
     public interface IRoomServerListener
     {
         void UserUpdated(IUserInfo user);
+
+        void LaserFiered(int x, int y, Direction direction, int lenght);
     }
 }

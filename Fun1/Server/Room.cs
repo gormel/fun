@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Interfaces;
 
 namespace Server
 {
@@ -10,13 +9,20 @@ namespace Server
 
         public IEnumerable<UserInfo> Users => RoomServers.Select(s => s.User);
 
-        public RoomServer CreateServer(string nick, IRoomServerListener listener)
+        public RoomServer CreateServer(string nick)
         {
             if (RoomServers.Any(s => s.Nick == nick))
                 return null;
 
-            var result = new RoomServer(this, nick, listener);
+            var result = new RoomServer(this, nick);
             return result;
+        }
+
+        public void Kill(UserInfo user)
+        {
+            user.Alive = false;
+
+            RoomServers.FirstOrDefault(r => r.User == user)?.SendUpdated();
         }
     }
 }

@@ -13,7 +13,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <ItemsControl ItemsSource="{Binding Users}" Grid.Column="0">
+        <ItemsControl ItemsSource="{Binding VisibleObjects}" Grid.Column="0" Focusable="False">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas/>
@@ -27,24 +27,27 @@
                 </Style>
             </ItemsControl.ItemContainerStyle>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type local:User}">
                     <Image Source="{Binding SkinImage}" Width="{Binding Width}" Height="{Binding Height}">
                         <Image.LayoutTransform>
                             <RotateTransform Angle="{Binding Direction}" />
                         </Image.LayoutTransform>
                     </Image>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:LaserFire}">
+                    <Line X1="0" Y1="0" X2="{Binding X1}" Y2="{Binding Y1}"/>
+                </DataTemplate>
+            </ItemsControl.Resources>
         </ItemsControl>
         
         <StackPanel Orientation="Vertical" Grid.Column="1">
-            <Button Height="21" Click="Connect_Click">Connect</Button>
-            <Button Height="21" Click="Move_Click">Move</Button>
-            <Button Height="21" Click="Left_Click">Left</Button>
-            <Button Height="21" Click="Top_Click">Top</Button>
-            <Button Height="21" Click="Right_Click">Right</Button>
-            <Button Height="21" Click="Bottom_Click">Bottom</Button>
+            <Button Height="21" Click="Connect_Click" Focusable="False">Connect</Button>
+            <Button Height="21" Click="Move_Click" Focusable="False">Move</Button>
+            <Button Height="21" Click="Left_Click" Focusable="False">Left</Button>
+            <Button Height="21" Click="Top_Click" Focusable="False">Top</Button>
+            <Button Height="21" Click="Right_Click" Focusable="False">Right</Button>
+            <Button Height="21" Click="Bottom_Click" Focusable="False">Bottom</Button>
         </StackPanel>
     </Grid>
 </Window>

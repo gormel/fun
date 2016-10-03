@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Interfaces;
 using SuperCore.Core;
 
@@ -13,8 +14,11 @@ namespace Server
             server.Register<ILoginServer>(new LoginServer());
 
             var listen = server.Listen(666);
-            
-            listen.Wait();
+
+            while (Console.ReadLine()?.ToLower() != "exit")
+            {
+                
+            }
         }
     }
 }

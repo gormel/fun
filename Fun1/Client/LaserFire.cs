@@ -1,21 +1,20 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows.Media;
+using System.Text;
+using System.Threading.Tasks;
 using Interfaces;
 
 namespace Client
 {
-    public class User : INotifyPropertyChanged
+    public class LaserFire : INotifyPropertyChanged
     {
-        private readonly Field mField;
-        public int Width => mField.CellWidth;
-        public int Height => mField.CellHeight;
-
-        private string mNick = "";
-        private int mX = 0;
-        private int mY = 0;
-        private float mDirection = 0;
-        private string mSkinImage = "GrayTank.png";
+        private int mX;
+        private int mY;
+        private int mX1;
+        private int mY1;
 
         public int X
         {
@@ -37,39 +36,24 @@ namespace Client
             }
         }
 
-        public float Direction
+        public int X1
         {
-            get { return mDirection; }
+            get { return mX1; }
             set
             {
-                mDirection = value;
+                mX1 = value;
                 OnPropertyChanged();
             }
         }
 
-        public string SkinImage
+        public int Y1
         {
-            get { return mSkinImage; }
+            get { return mY1; }
             set
             {
-                mSkinImage = value;
+                mY1 = value;
                 OnPropertyChanged();
             }
-        }
-
-        public string Nick
-        {
-            get { return mNick; }
-            set
-            {
-                mNick = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public User(Field field)
-        {
-            mField = field;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
