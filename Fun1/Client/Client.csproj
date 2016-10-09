@@ -35,6 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SuperCore, Version=0.1.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperCore.0.1.0.4\lib\net452\SuperCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SuperJson, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperCore.0.1.0.4\lib\net452\SuperJson.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -90,6 +98,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -100,14 +109,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SuperLib\SuperCore\SuperCore\SuperCore.csproj">
-      <Project>{507cadab-e9cb-42a2-8b8d-f8a12762e396}</Project>
-      <Name>SuperCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\SuperLib\SuperCore\SuperJson\SuperJson.csproj">
-      <Project>{4b6cab65-f1c2-428b-8f46-8ba261038da4}</Project>
-      <Name>SuperJson</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj">
       <Project>{EBBF8CD9-C10C-4545-8B7B-16211EFC5146}</Project>
       <Name>Interfaces</Name>

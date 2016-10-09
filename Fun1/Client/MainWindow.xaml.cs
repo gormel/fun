@@ -75,9 +75,14 @@ namespace Client
             DataContext = field;
         }
 
+        private bool mDown;
+
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            Trace.WriteLine("KeyDown");
+            if (mDown)
+                return;
+            mDown = true;
+
             if (mRoom == null)
                 return;
 
@@ -110,6 +115,11 @@ namespace Client
             }
 
             mRoom.Rotate(moveDirection);
+        }
+
+        private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            mDown = false;
         }
     }
 }

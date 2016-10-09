@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525"
         Loaded="MainWindow_OnLoaded"
-        KeyDown="Window_KeyDown">
+        KeyDown="Window_KeyDown"
+        KeyUp="MainWindow_OnKeyUp">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
