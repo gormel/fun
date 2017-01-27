@@ -14,7 +14,30 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        <ItemsControl ItemsSource="{Binding VisibleObjects}" Grid.Column="0" Focusable="False">
+        <ItemsControl Grid.Column="0" Focusable="False">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type local:User}">
+                    <Image Source="{Binding SkinImage}" Width="{Binding Width}" Height="{Binding Height}">
+                        <Image.LayoutTransform>
+                            <RotateTransform Angle="{Binding Direction}" />
+                        </Image.LayoutTransform>
+                    </Image>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type local:LaserFire}">
+                    <Line X2="{Binding X1}" Y2="{Binding Y1}" StrokeThickness="50" Fill="Black"/>
+                    <!--<Ellipse Width="20" Height="20" Fill="Black"/>-->
+                </DataTemplate>
+                
+                <CollectionViewSource x:Key="UsersCollection" Source="{Binding Users}"/>
+                <CollectionViewSource x:Key="FiresCollection" Source="{Binding Fires}"/>
+            </ItemsControl.Resources>
+            
+            <ItemsControl.ItemsSource>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{Binding Source={StaticResource UsersCollection}}"/>
+                    <CollectionContainer Collection="{Binding Source={StaticResource FiresCollection}}"/>
+                </CompositeCollection>
+            </ItemsControl.ItemsSource>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas/>
@@ -27,19 +50,6 @@
                     <Setter Property="Canvas.Top" Value="{Binding Y}"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>
-
-            <ItemsControl.Resources>
-                <DataTemplate DataType="{x:Type local:User}">
-                    <Image Source="{Binding SkinImage}" Width="{Binding Width}" Height="{Binding Height}">
-                        <Image.LayoutTransform>
-                            <RotateTransform Angle="{Binding Direction}" />
-                        </Image.LayoutTransform>
-                    </Image>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type local:LaserFire}">
-                    <Line X1="0" Y1="0" X2="{Binding X1}" Y2="{Binding Y1}"/>
-                </DataTemplate>
-            </ItemsControl.Resources>
         </ItemsControl>
         
         <StackPanel Orientation="Vertical" Grid.Column="1">

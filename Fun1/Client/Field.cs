@@ -15,14 +15,14 @@ namespace Client
 
         public ObservableCollection<LaserFire> Fires { get; } = new ObservableCollection<LaserFire>(); 
 
-        public CompositeCollection VisibleObjects { get; } = new CompositeCollection();
+        //public CompositeCollection VisibleObjects { get; } = new CompositeCollection();
 
         public IRoomServer RoomServer { get; }
 
         public Field(ILobbyServer lobbyServer)
         {
-            VisibleObjects.Add(new CollectionContainer { Collection = Users });
-            VisibleObjects.Add(new CollectionContainer { Collection = Fires });
+            //VisibleObjects.Add(new CollectionContainer { Collection = Users });
+            //VisibleObjects.Add(new CollectionContainer { Collection = Fires });
             RoomServer = lobbyServer.Join();
             RoomServer.AddListener(new RoomServerListener(this));
         }
