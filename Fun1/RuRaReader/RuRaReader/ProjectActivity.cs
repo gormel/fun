@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -21,9 +22,9 @@ namespace RuRaReader
             base.OnCreate(savedInstanceState);
             var id = Intent.GetIntExtra("Id", -1);
 
-            SetContentView(Resource.Layout.ProjectLayout);
+            SetContentView(Resource.Layout.Main);
 
-            var projects = new CollectionBinding<VolumeModel>(mVolumesCollection, (LinearLayout)FindViewById(Resource.Id.Volumes), ApplyTemplate);
+            var projects = new CollectionBinding<VolumeModel>(mVolumesCollection, (LinearLayout)FindViewById(Resource.Id.Container), ApplyTemplate);
 
             var client = new HttpClient();
             var result = await client.GetAsync($"http://ruranobe.ru/api/projects/{id}/volumes");
@@ -42,7 +43,18 @@ namespace RuRaReader
         {
             var result = new Button(this);
             result.Text = volumeModel.Title;
+            result.Tag = volumeModel;
+            result.Click += ResultOnClick;
             return result;
+        }
+
+        private void ResultOnClick(object sender, EventArgs eventArgs)
+        {
+            var btn = (Button) sender;
+            var model = (VolumeModel) btn.Tag;
+            var toStart = new Intent(this, typeof(VolumeActivity));
+            toStart.PutExtra("Id", model.Id);
+            StartActivity(toStart);
         }
     }
 }
