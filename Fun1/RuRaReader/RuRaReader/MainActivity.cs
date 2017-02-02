@@ -23,7 +23,7 @@ namespace RuRaReader
             // Set our view from the "main" layout resource
             SetContentView (Resource.Layout.Main);
             
-            var projects = new CollectionBinding<ProjectModel>(mProjectsCollection, (LinearLayout)FindViewById(Resource.Id.Projects), ApplyProjectTemplate);
+            var projects = new CollectionBinding<ProjectModel>(mProjectsCollection, (LinearLayout)FindViewById(Resource.Id.Container), ApplyProjectTemplate);
 
             var client = new HttpClient();
             var result = await client.GetAsync("http://ruranobe.ru/api/projects");
