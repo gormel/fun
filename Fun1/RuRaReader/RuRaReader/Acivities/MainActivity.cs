@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -10,31 +11,27 @@ using RuRaReader.Model;
 using RuRaReader.Model.Bindings;
 using SuperJson;
 
-namespace RuRaReader
+namespace RuRaReader.Acivities
 {
     [Activity(Label = "RuRaReader", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainActivity : Activity
+    public class MainActivity : BaseActivity
     {
-        private readonly ObservableCollection<ProjectModel> mProjectsCollection = new ObservableCollection<ProjectModel>(); 
-        protected override async void OnCreate(Bundle bundle)
+        private readonly ObservableCollection<ProjectModel> mProjectsCollection = new ObservableCollection<ProjectModel>();
+
+        protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(bundle);
+            SaveDataManager.Instance.Load(FilesDir.AbsolutePath);
+            base.OnCreate(savedInstanceState);
+        }
 
-            // Set our view from the "main" layout resource
-            SetContentView (Resource.Layout.Main);
+        protected override async Task StartLoad()
+        {
+            var projects = new CollectionBinding<ProjectModel>(mProjectsCollection, ContentContainer, ApplyProjectTemplate);
             
-            var projects = new CollectionBinding<ProjectModel>(mProjectsCollection, (LinearLayout)FindViewById(Resource.Id.Container), ApplyProjectTemplate);
-
-            var client = new HttpClient();
-            var result = await client.GetAsync("http://ruranobe.ru/api/projects");
-            var textResult = await result.Content.ReadAsStringAsync();
-            var ser = new SuperJsonSerializer();
-            dynamic res = ser.Deserialize(textResult);
-
             mProjectsCollection.Clear();
-            foreach (var project in res)
+            foreach (var model in await SaveDataManager.Instance.GetProjects())
             {
-                mProjectsCollection.Add(new ProjectModel(project));
+                mProjectsCollection.Add(model);
             }
         }
 

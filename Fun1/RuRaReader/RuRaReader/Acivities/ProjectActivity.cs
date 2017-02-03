@@ -1,41 +1,32 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Views;
 using Android.Widget;
 using RuRaReader.Model;
 using RuRaReader.Model.Bindings;
-using SuperJson;
 
-namespace RuRaReader
+namespace RuRaReader.Acivities
 {
     [Activity(Label = "Project")]
-    public class ProjectActivity : Activity
+    public class ProjectActivity : BaseActivity
     {
-        private ObservableCollection<VolumeModel> mVolumesCollection = new ObservableCollection<VolumeModel>(); 
+        private ObservableCollection<VolumeModel> mVolumesCollection = new ObservableCollection<VolumeModel>();
 
-        protected override async void OnCreate(Bundle savedInstanceState)
+        protected override async Task StartLoad()
         {
-            base.OnCreate(savedInstanceState);
             var id = Intent.GetIntExtra("Id", -1);
+            var projects = new CollectionBinding<VolumeModel>(mVolumesCollection, ContentContainer, ApplyTemplate);
 
-            SetContentView(Resource.Layout.Main);
-
-            var projects = new CollectionBinding<VolumeModel>(mVolumesCollection, (LinearLayout)FindViewById(Resource.Id.Container), ApplyTemplate);
-
-            var client = new HttpClient();
-            var result = await client.GetAsync($"http://ruranobe.ru/api/projects/{id}/volumes");
-            var textResult = await result.Content.ReadAsStringAsync();
-            var ser = new SuperJsonSerializer();
-            dynamic res = ser.Deserialize(textResult);
-
+            var proj = await SaveDataManager.Instance.GetProject(id);
+            ActionBar.Title = proj.Title;
             mVolumesCollection.Clear();
-            foreach (var vol in res)
+            foreach (var vol in await SaveDataManager.Instance.GetVolumes(id))
             {
-                mVolumesCollection.Add(new VolumeModel(vol));
+                mVolumesCollection.Add(vol);
             }
         }
 
@@ -54,6 +45,7 @@ namespace RuRaReader
             var model = (VolumeModel) btn.Tag;
             var toStart = new Intent(this, typeof(VolumeActivity));
             toStart.PutExtra("Id", model.Id);
+            toStart.PutExtra("Url", model.Url);
             StartActivity(toStart);
         }
     }
