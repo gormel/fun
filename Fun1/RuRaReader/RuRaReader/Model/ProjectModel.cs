@@ -13,12 +13,6 @@ namespace RuRaReader.Model
         {
             Title = des.title;
             Id = (int)des.projectId;
-            Load(des);
-        }
-
-        private async void Load(dynamic des)
-        {
-            
         }
     }
 }

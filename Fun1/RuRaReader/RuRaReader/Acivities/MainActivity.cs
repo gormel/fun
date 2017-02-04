@@ -20,7 +20,8 @@ namespace RuRaReader.Acivities
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            SaveDataManager.Instance.Load(FilesDir.AbsolutePath);
+            if (!SaveDataManager.Instance.Loaded)
+                SaveDataManager.Instance.Load(FilesDir.AbsolutePath);
             base.OnCreate(savedInstanceState);
         }
 

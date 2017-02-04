@@ -19,6 +19,7 @@ namespace RuRaReader.Acivities
     public class VolumeActivity : BaseActivity
     {
         private readonly ObservableCollection<ChapterModel> mChaptersCollection = new ObservableCollection<ChapterModel>();
+        private VolumeModel mVolume;
 
         protected override async Task StartLoad()
         {
@@ -26,8 +27,8 @@ namespace RuRaReader.Acivities
 
             var projects = new CollectionBinding<ChapterModel>(mChaptersCollection, (LinearLayout)FindViewById(Resource.Id.Container), ApplyTemplate);
 
-            var volume = await SaveDataManager.Instance.GetVolume(id);
-            ActionBar.Title = volume.Title;
+            mVolume = await SaveDataManager.Instance.GetVolume(id);
+            ActionBar.Title = mVolume.Title;
             foreach (var chapter in await SaveDataManager.Instance.GetChapters(id))
             {
                 mChaptersCollection.Add(chapter);
@@ -55,6 +56,18 @@ namespace RuRaReader.Acivities
             var toStart = new Intent(this, typeof (TextActivity1));
             toStart.PutExtra("Id", model.Id);
             StartActivity(toStart);
+        }
+
+        public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Back)
+            {
+                var toStart = new Intent(this, typeof(ProjectActivity));
+                toStart.PutExtra("Id", mVolume.Project.Id);
+                StartActivity(toStart);
+                return true;
+            }
+            return base.OnKeyDown(keyCode, e);
         }
     }
 }

@@ -7,9 +7,12 @@ using Android.Widget;
 
 namespace RuRaReader.Acivities
 {
-    public abstract class BaseActivity : Activity
+    public abstract class BaseActivity : Activity, ViewTreeObserver.IOnScrollChangedListener
     {
         protected LinearLayout ContentContainer { get; private set; }
+        private ScrollView mScroller;
+        private int mLastScroll;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -22,8 +25,8 @@ namespace RuRaReader.Acivities
 
             ContentContainer = (LinearLayout)FindViewById(Resource.Id.Container);
 
-            var scroller = (ScrollView)FindViewById(Resource.Id.Scroller);
-            scroller.ScrollChange += ScrollerOnScrollChange;
+            mScroller = (ScrollView)FindViewById(Resource.Id.Scroller);
+            mScroller.ViewTreeObserver.AddOnScrollChangedListener(this);
 
             StartLoad().ContinueWith(t =>
             {
@@ -36,13 +39,13 @@ namespace RuRaReader.Acivities
             });
         }
 
-        private void ScrollerOnScrollChange(object sender, View.ScrollChangeEventArgs scrollChangeEventArgs)
-        {
-            OnScrollChanged(scrollChangeEventArgs);
-        }
-
         protected abstract Task StartLoad();
 
-        protected virtual void OnScrollChanged(View.ScrollChangeEventArgs scrollChangeEventArgs) { }
+        protected virtual void OnScrollChanged(int oldScroll, int newScroll) { }
+        public void OnScrollChanged()
+        {
+            OnScrollChanged(mLastScroll, mScroller.ScrollY);
+            mLastScroll = mScroller.ScrollY;
+        }
     }
 }

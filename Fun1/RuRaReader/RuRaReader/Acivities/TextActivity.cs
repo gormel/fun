@@ -24,6 +24,19 @@ namespace RuRaReader.Acivities
 
             ActionBar.Title = mTextModel.Title ?? "Text";
             mTextContainer.Text = mTextModel.Text;
+
+            if (SaveDataManager.Instance.ChapterSctolls.ContainsKey(mTextModel.Chapter.Url))
+            {
+                var scroller = (ScrollView)FindViewById(Resource.Id.Scroller);
+                var value = SaveDataManager.Instance.ChapterSctolls[mTextModel.Chapter.Url];
+                RunOnUiThread(() =>
+                {
+                    scroller.Post(() =>
+                    {
+                        scroller.ScrollTo(0, value);
+                    });
+                });
+            }
         }
 
         private void ConstructInterface()
@@ -36,13 +49,9 @@ namespace RuRaReader.Acivities
             prevBtn.TextAlignment = TextAlignment.Gravity;
             prevBtn.Click += PrevBtnOnClick;
             ContentContainer.AddView(prevBtn);
-
-            var textScroller = new ScrollView(this);
-
+            
             mTextContainer = new TextView(this);
-
-            textScroller.AddView(mTextContainer);
-            ContentContainer.AddView(textScroller);
+            ContentContainer.AddView(mTextContainer);
 
             var nextBtn = new Button(this);
             nextBtn.Gravity = GravityFlags.Center;
@@ -77,9 +86,28 @@ namespace RuRaReader.Acivities
             StartActivity(toStart);
         }
 
-        protected override void OnScrollChanged(View.ScrollChangeEventArgs scrollChangeEventArgs)
+        protected override void OnScrollChanged(int lastScroll, int newScroll)
         {
-            var delta = scrollChangeEventArgs.OldScrollY - scrollChangeEventArgs.ScrollY;
+            SaveDataManager.Instance.ChapterSctolls[mTextModel.Chapter.Url] = newScroll;
+            var delta = Math.Abs(lastScroll - newScroll);
+            mCollectedDelta += delta;
+            if (mCollectedDelta > 10)
+            {
+                mCollectedDelta = 0;
+                SaveDataManager.Instance.Save(FilesDir.AbsolutePath);
+            }
+        }
+
+        public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Back)
+            {
+                var toStart = new Intent(this, typeof(VolumeActivity));
+                toStart.PutExtra("Id", mTextModel.Chapter.Volume.Id);
+                StartActivity(toStart);
+                return true;
+            }
+            return base.OnKeyDown(keyCode, e);
         }
     }
 }

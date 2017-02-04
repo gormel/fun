@@ -9,8 +9,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="Loading..."
-        android:textSize="25sp"
-        android:visibility="gone" />
+        android:textSize="25sp"/>
     <ScrollView
         android:id="@+id/Scroller"
         android:layout_width="match_parent"

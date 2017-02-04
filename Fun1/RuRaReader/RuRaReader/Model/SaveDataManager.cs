@@ -31,10 +31,11 @@ namespace RuRaReader.Model
         private readonly ConcurrentDictionary<int, TextModel> mTextCace = new ConcurrentDictionary<int, TextModel>();
         [DoNotSerialise]
         private int mLastChapterId;
+        [DoNotSerialise]
         public bool Loaded { get; private set; }
 
         public List<string> ReadChapterUrls { get; private set; } = new List<string>();
-        public Dictionary<string, float> ChapterSctolls { get; private set; } = new Dictionary<string, float>();
+        public Dictionary<string, int> ChapterSctolls { get; private set; } = new Dictionary<string, int>();
 
         public void Load(string dir)
         {

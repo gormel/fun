@@ -48,5 +48,16 @@ namespace RuRaReader.Acivities
             toStart.PutExtra("Url", model.Url);
             StartActivity(toStart);
         }
+
+        public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Back)
+            {
+                var toStart = new Intent(this, typeof(MainActivity));
+                StartActivity(toStart);
+                return true;
+            }
+            return base.OnKeyDown(keyCode, e);
+        }
     }
 }
