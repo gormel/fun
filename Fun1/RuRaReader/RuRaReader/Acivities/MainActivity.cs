@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -9,7 +8,6 @@ using Android.Views;
 using Android.Widget;
 using RuRaReader.Model;
 using RuRaReader.Model.Bindings;
-using SuperJson;
 
 namespace RuRaReader.Acivities
 {
@@ -51,7 +49,24 @@ namespace RuRaReader.Acivities
             var model = (ProjectModel) btn.Tag;
             var toStart = new Intent(this, typeof(ProjectActivity));
             toStart.PutExtra("Id", model.Id);
+            toStart.SetFlags(ActivityFlags.ClearTop);
             StartActivity(toStart);
+        }
+
+        public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Back)
+            {
+                var dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder
+                    .SetMessage("Real quit?")
+                    .SetTitle("Alert")
+                    .SetCancelable(true)
+                    .SetPositiveButton("Yes", (sender, args) => { Finish(); })
+                    .SetNegativeButton("No", (sender, args) => { })
+                    .Create().Show();
+            }
+            return base.OnKeyDown(keyCode, e);
         }
     }
 }

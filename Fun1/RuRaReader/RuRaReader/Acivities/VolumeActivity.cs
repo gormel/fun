@@ -55,6 +55,7 @@ namespace RuRaReader.Acivities
 
             var toStart = new Intent(this, typeof (TextActivity1));
             toStart.PutExtra("Id", model.Id);
+            toStart.SetFlags(ActivityFlags.ClearTop);
             StartActivity(toStart);
         }
 
@@ -64,6 +65,7 @@ namespace RuRaReader.Acivities
             {
                 var toStart = new Intent(this, typeof(ProjectActivity));
                 toStart.PutExtra("Id", mVolume.Project.Id);
+                toStart.SetFlags(ActivityFlags.ClearTop);
                 StartActivity(toStart);
                 return true;
             }

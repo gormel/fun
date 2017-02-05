@@ -46,6 +46,7 @@ namespace RuRaReader.Acivities
             var toStart = new Intent(this, typeof(VolumeActivity));
             toStart.PutExtra("Id", model.Id);
             toStart.PutExtra("Url", model.Url);
+            toStart.SetFlags(ActivityFlags.ClearTop);
             StartActivity(toStart);
         }
 
@@ -54,6 +55,7 @@ namespace RuRaReader.Acivities
             if (keyCode == Keycode.Back)
             {
                 var toStart = new Intent(this, typeof(MainActivity));
+                toStart.SetFlags(ActivityFlags.ClearTop);
                 StartActivity(toStart);
                 return true;
             }

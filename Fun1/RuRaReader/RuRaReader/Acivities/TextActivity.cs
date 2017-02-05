@@ -73,6 +73,7 @@ namespace RuRaReader.Acivities
 
             var toStart = new Intent(this, typeof(TextActivity1));
             toStart.PutExtra("Id", mTextModel.Chapter.NextModel.Id);
+            toStart.SetFlags(ActivityFlags.ClearTop);
             StartActivity(toStart);
         }
 
@@ -83,6 +84,7 @@ namespace RuRaReader.Acivities
             
             var toStart = new Intent(this, typeof(TextActivity1));
             toStart.PutExtra("Id", mTextModel.Chapter.PrevModel.Id);
+            toStart.SetFlags(ActivityFlags.ClearTop);
             StartActivity(toStart);
         }
 
@@ -104,6 +106,7 @@ namespace RuRaReader.Acivities
             {
                 var toStart = new Intent(this, typeof(VolumeActivity));
                 toStart.PutExtra("Id", mTextModel.Chapter.Volume.Id);
+                toStart.SetFlags(ActivityFlags.ClearTop);
                 StartActivity(toStart);
                 return true;
             }

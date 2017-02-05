@@ -111,12 +111,6 @@
     <None Include="Resources\Circle.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SuperLib\SuperCore\SuperJson\SuperJson.csproj">
-      <Project>{4b6cab65-f1c2-428b-8f46-8ba261038da4}</Project>
-      <Name>SuperJson</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Add.png" />
   </ItemGroup>
   <ItemGroup>

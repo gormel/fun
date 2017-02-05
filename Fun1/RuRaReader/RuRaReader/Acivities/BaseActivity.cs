@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Android.App;
 using Android.OS;
@@ -23,20 +24,28 @@ namespace RuRaReader.Acivities
             var loading = FindViewById(Resource.Id.Loading);
             loading.Visibility = ViewStates.Visible;
 
-            ContentContainer = (LinearLayout)FindViewById(Resource.Id.Container);
-
-            mScroller = (ScrollView)FindViewById(Resource.Id.Scroller);
-            mScroller.ViewTreeObserver.AddOnScrollChangedListener(this);
-
-            StartLoad().ContinueWith(t =>
+            try
             {
-                if (t.IsFaulted)
-                    Log.Error("ex", t.Exception.ToString());
-                RunOnUiThread(() =>
+                ContentContainer = (LinearLayout)FindViewById(Resource.Id.Container);
+
+                mScroller = (ScrollView)FindViewById(Resource.Id.Scroller);
+                mScroller.ViewTreeObserver.AddOnScrollChangedListener(this);
+
+                StartLoad().ContinueWith(t =>
                 {
-                    loading.Visibility = ViewStates.Gone;
+                    if (t.IsFaulted)
+                        Log.Error("RuRaReader", t.Exception.ToString());
+                    RunOnUiThread(() =>
+                    {
+                        loading.Visibility = ViewStates.Gone;
+                    });
                 });
-            });
+            }
+            catch (Exception e)
+            {
+                Log.Error("RuRaReader", e.ToString());
+                throw;
+            }
         }
 
         protected abstract Task StartLoad();

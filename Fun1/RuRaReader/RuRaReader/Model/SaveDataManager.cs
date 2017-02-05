@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Android.App;
 using HtmlAgilityPack;
 using SuperJson;
 using SuperJson.Parser;
