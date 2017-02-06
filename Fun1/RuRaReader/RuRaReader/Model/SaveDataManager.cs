@@ -2,11 +2,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using RuRaReader.Model.SerializeCustomers;
 using SuperJson;
 using SuperJson.Parser;
 using Object = Java.Lang.Object;
@@ -18,6 +21,10 @@ namespace RuRaReader.Model
         private static readonly Lazy<SaveDataManager> mInstance = new Lazy<SaveDataManager>(() => new SaveDataManager());
         public static SaveDataManager Instance => mInstance.Value;
 
+        [DoNotSerialise]
+        private readonly HttpClient mClient = new HttpClient();
+        [DoNotSerialise]
+        private readonly SuperJsonSerializer mSerializer = new SuperJsonSerializer();
         [DoNotSerialise]
         const string FileName = "Data.json";
         [DoNotSerialise]
@@ -35,8 +42,13 @@ namespace RuRaReader.Model
 
         public List<string> ReadChapterUrls { get; private set; } = new List<string>();
         public Dictionary<string, int> ChapterSctolls { get; private set; } = new Dictionary<string, int>();
-        [DoNotSerialise]
         public Dictionary<int, int> ProjectOrders { get; private set; } = new Dictionary<int, int>();
+
+        public SaveDataManager()
+        {
+            mSerializer.SerializeCustomers.Add(new IntToIntDictionarySerializeCustomer());
+            mSerializer.DeserializeCustomers.Add(new IntToIntDictionaryDeserializeCustomer());
+        }
 
         public void Load(string dir)
         {
@@ -48,9 +60,8 @@ namespace RuRaReader.Model
 
             if (string.IsNullOrEmpty(readData))
                 return;
-
-            var des = new SuperJsonSerializer();
-            var data = (SaveDataManager)des.Deserialize(readData);
+            
+            var data = (SaveDataManager)mSerializer.Deserialize(readData);
 
             ReadChapterUrls = data.ReadChapterUrls;
             ChapterSctolls = data.ChapterSctolls;
@@ -60,17 +71,17 @@ namespace RuRaReader.Model
 
         public void Save(string dir)
         {
-            var ser = new SuperJsonSerializer();
-            var serData = ser.Serialize(this);
+            var serData = mSerializer.Serialize(this);
             File.WriteAllText(Path.Combine(dir, FileName), serData);
             Loaded = true;
         }
 
         private async Task<string> ReadUrl(string url)
         {
-            var client = new HttpClient();
-            var result = await client.GetAsync(url);
-            return await result.Content.ReadAsStringAsync();
+            var result = await mClient.GetAsync(url);
+            var strResult = await result.Content.ReadAsStringAsync();
+            var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
+            return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
         public async Task<IReadOnlyList<ProjectModel>> GetProjects()
@@ -78,7 +89,7 @@ namespace RuRaReader.Model
             if (mProjectsCashe == null)
             {
                 var source = await ReadUrl("http://ruranobe.ru/api/projects");
-                dynamic des = new SuperJsonSerializer().Deserialize(source);
+                dynamic des = mSerializer.Deserialize(source);
 
                 mProjectsCashe = new List<ProjectModel>();
                 foreach (var project in des)
@@ -114,7 +125,7 @@ namespace RuRaReader.Model
             if (!mVolumeCashe.ContainsKey(projectId))
             {
                 var source = await ReadUrl($"http://ruranobe.ru/api/projects/{projectId}/volumes");
-                dynamic des = new SuperJsonSerializer().Deserialize(source);
+                dynamic des = mSerializer.Deserialize(source);
                 mVolumeCashe[projectId] = new List<VolumeModel>();
                 foreach (var vol in des)
                 {

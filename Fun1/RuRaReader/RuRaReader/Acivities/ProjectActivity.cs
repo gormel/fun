@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -34,7 +34,7 @@ namespace RuRaReader.Acivities
                 var info = new TextView(this);
                 info.Gravity = GravityFlags.Center;
                 info.TextSize = 18;
-                info.Text = "Томов нет =(";
+                info.Text = "РўРѕРјРѕРІ РЅРµС‚ =(";
                 ContentContainer.AddView(info);
             }
         }
