@@ -40,7 +40,8 @@ namespace RuRaReader.Model.SerializeCustomers
     {
         public override bool UseCustomer(SuperToken obj, Type declaredType)
         {
-            return obj is SuperObject && (((SuperObject) obj).TypedValue["$type"] as SuperString)?.TypedValue == "IntToIntDictionary";
+            return obj is SuperObject && ((SuperObject)obj).TypedValue.ContainsKey("$type") && 
+                (((SuperObject) obj).TypedValue["$type"] as SuperString)?.TypedValue == "IntToIntDictionary";
         }
 
         public override object Deserialize(SuperToken obj, SuperJsonSerializer serializer)
