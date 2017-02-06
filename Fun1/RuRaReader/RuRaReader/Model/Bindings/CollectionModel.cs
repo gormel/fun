@@ -43,7 +43,8 @@ namespace RuRaReader.Model.Bindings
                     {
                         var view = mApplyTemplate(obj);
                         view.Tag = obj;
-                        Container.AddView(view);
+                        var index = ItemsSource.IndexOf(obj);
+                        Container.AddView(view, index);
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:

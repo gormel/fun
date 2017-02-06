@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -28,10 +30,32 @@ namespace RuRaReader.Acivities
             var projects = new CollectionBinding<ProjectModel>(mProjectsCollection, ContentContainer, ApplyProjectTemplate);
             
             mProjectsCollection.Clear();
+            var orders = SaveDataManager.Instance.ProjectOrders;
             foreach (var model in await SaveDataManager.Instance.GetProjects())
             {
-                mProjectsCollection.Add(model);
+                if (!SaveDataManager.Instance.ProjectOrders.ContainsKey(model.Id))
+                    SaveDataManager.Instance.ProjectOrders[model.Id] = 0;
+                
+                var index = BinarySearch(mProjectsCollection, model);
+                mProjectsCollection.Insert(index, model);
             }
+        }
+
+        private int BinarySearch(ObservableCollection<ProjectModel> collection, ProjectModel model)
+        {
+            var a = 0;
+            var b = collection.Count;
+            var mValue = SaveDataManager.Instance.ProjectOrders[model.Id];
+            while (a != b)
+            {
+                var c = (a + b) / 2;
+                var cValue = SaveDataManager.Instance.ProjectOrders[collection[c].Id];
+                if (mValue < cValue)
+                    a = c;
+                else
+                    b = c;
+            }
+            return a;
         }
 
         private View ApplyProjectTemplate(ProjectModel s)
@@ -47,6 +71,8 @@ namespace RuRaReader.Acivities
         {
             var btn = (Button) sender;
             var model = (ProjectModel) btn.Tag;
+            SaveDataManager.Instance.TopProject(model.Id);
+            SaveDataManager.Instance.Save(FilesDir.AbsolutePath);
             var toStart = new Intent(this, typeof(ProjectActivity));
             toStart.PutExtra("Id", model.Id);
             toStart.SetFlags(ActivityFlags.ClearTop);

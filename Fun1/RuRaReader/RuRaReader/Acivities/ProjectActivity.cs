@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
@@ -27,6 +28,14 @@ namespace RuRaReader.Acivities
             foreach (var vol in await SaveDataManager.Instance.GetVolumes(id))
             {
                 mVolumesCollection.Add(vol);
+            }
+            if (!mVolumesCollection.Any())
+            {
+                var info = new TextView(this);
+                info.Gravity = GravityFlags.Center;
+                info.TextSize = 18;
+                info.Text = "Томов нет =(";
+                ContentContainer.AddView(info);
             }
         }
 

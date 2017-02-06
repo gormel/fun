@@ -1,15 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Dynamic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
-using HtmlAgilityPack;
 using RuRaReader.Model;
 using RuRaReader.Model.Bindings;
 
@@ -32,6 +29,14 @@ namespace RuRaReader.Acivities
             foreach (var chapter in await SaveDataManager.Instance.GetChapters(id))
             {
                 mChaptersCollection.Add(chapter);
+            }
+            if (!mChaptersCollection.Any())
+            {
+                var info = new TextView(this);
+                info.Gravity = GravityFlags.Center;
+                info.TextSize = 18;
+                info.Text = "√лав нет =(";
+                ContentContainer.AddView(info);
             }
         }
 

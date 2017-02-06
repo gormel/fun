@@ -35,6 +35,8 @@ namespace RuRaReader.Model
 
         public List<string> ReadChapterUrls { get; private set; } = new List<string>();
         public Dictionary<string, int> ChapterSctolls { get; private set; } = new Dictionary<string, int>();
+        [DoNotSerialise]
+        public Dictionary<int, int> ProjectOrders { get; private set; } = new Dictionary<int, int>();
 
         public void Load(string dir)
         {
@@ -52,6 +54,7 @@ namespace RuRaReader.Model
 
             ReadChapterUrls = data.ReadChapterUrls;
             ChapterSctolls = data.ChapterSctolls;
+            ProjectOrders = data.ProjectOrders ?? ProjectOrders;
             Loaded = true;
         }
 
@@ -80,10 +83,20 @@ namespace RuRaReader.Model
                 mProjectsCashe = new List<ProjectModel>();
                 foreach (var project in des)
                 {
-                    mProjectsCashe.Add(new ProjectModel(project));
+                    var model = new ProjectModel(project);
+                    mProjectsCashe.Add(model);
                 }
             }
             return mProjectsCashe;
+        }
+
+        public void TopProject(int id)
+        {
+            if (!ProjectOrders.ContainsKey(id))
+                ProjectOrders[id] = 0;
+
+            var max = ProjectOrders.Values.Max();
+            ProjectOrders[id] = max + 1;
         }
 
         public async Task<ProjectModel> GetProject(int id)

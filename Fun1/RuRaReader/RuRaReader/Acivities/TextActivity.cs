@@ -24,6 +24,8 @@ namespace RuRaReader.Acivities
 
             ActionBar.Title = mTextModel.Title ?? "Text";
             mTextContainer.Text = mTextModel.Text;
+            if (string.IsNullOrWhiteSpace(mTextContainer.Text))
+                mTextContainer.Text = "Здесь текста нет!";
 
             if (SaveDataManager.Instance.ChapterSctolls.ContainsKey(mTextModel.Chapter.Url))
             {
