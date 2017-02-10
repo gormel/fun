@@ -30,32 +30,17 @@ namespace RuRaReader.Acivities
             var projects = new CollectionBinding<ProjectModel>(mProjectsCollection, ContentContainer, ApplyProjectTemplate);
             
             mProjectsCollection.Clear();
-            var orders = SaveDataManager.Instance.ProjectOrders;
-            foreach (var model in await SaveDataManager.Instance.GetProjects())
+            var projectModels = (await SaveDataManager.Instance.GetProjects()).OrderByDescending(m =>
             {
-                if (!SaveDataManager.Instance.ProjectOrders.ContainsKey(model.Id))
-                    SaveDataManager.Instance.ProjectOrders[model.Id] = 0;
-                
-                var index = BinarySearch(mProjectsCollection, model);
-                mProjectsCollection.Insert(index, model);
-            }
-        }
+                if (!SaveDataManager.Instance.ProjectOrders.ContainsKey(m.Id))
+                    return 0;
+                return SaveDataManager.Instance.ProjectOrders[m.Id];
+            }).ToList();
 
-        private int BinarySearch(ObservableCollection<ProjectModel> collection, ProjectModel model)
-        {
-            var a = 0;
-            var b = collection.Count;
-            var mValue = SaveDataManager.Instance.ProjectOrders[model.Id];
-            while (a != b)
+            foreach (var model in projectModels)
             {
-                var c = (a + b) / 2;
-                var cValue = SaveDataManager.Instance.ProjectOrders[collection[c].Id];
-                if (mValue < cValue)
-                    a = c;
-                else
-                    b = c;
+                mProjectsCollection.Add(model);
             }
-            return a;
         }
 
         private View ApplyProjectTemplate(ProjectModel s)

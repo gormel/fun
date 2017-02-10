@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace RuRaReader.Acivities
                 var info = new TextView(this);
                 info.Gravity = GravityFlags.Center;
                 info.TextSize = 18;
-                info.Text = "√Î‡‚ ÌÂÚ =(";
+                info.Text = "–ì–ª–∞–≤ –Ω–µ—Ç =(";
                 ContentContainer.AddView(info);
             }
         }

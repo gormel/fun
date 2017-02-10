@@ -72,10 +72,6 @@
     <Reference Include="Mono.CSharp" />
     <Reference Include="mscorlib" />
     <Reference Include="OpenTK-1.0" />
-    <Reference Include="SuperJson, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\RuRaNugetPackages\bin\Release\SuperJson.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -92,6 +88,7 @@
     <Compile Include="Model\ChapterModel.cs" />
     <Compile Include="Model\ProjectModel.cs" />
     <Compile Include="Model\SaveDataManager.cs" />
+    <Compile Include="Model\SerializeCustomers\IntToIntDictionarySerializeCustomer.cs" />
     <Compile Include="Model\TextModel.cs" />
     <Compile Include="Model\VolumeModel.cs" />
     <Compile Include="Acivities\ProjectActivity.cs" />
@@ -121,6 +118,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\SuperLib\SuperCore\SuperJson\SuperJson.csproj">
+      <Project>{4b6cab65-f1c2-428b-8f46-8ba261038da4}</Project>
+      <Name>SuperJson</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
