@@ -227,6 +227,8 @@ namespace RuRaReader.Model
             return null;
         }
 
+        private bool IsHeaderTag(string name) => name.Length == 2 && name[0] == 'h' && char.IsDigit(name[1]);
+
         public async Task<TextModel> GetText(int chapterId)
         {
             if (!mTextCace.ContainsKey(chapterId))
@@ -247,12 +249,12 @@ namespace RuRaReader.Model
                 List<string> constr = null;
                 foreach (var node in text)
                 {
-                    if (node.Name == "h2")
+                    if (IsHeaderTag(node.Name))
                     {
                         constr = new List<string>();
                         lst.Add(constr);
                     }
-                    if (node.Name == "h2" || node.Name == "p")
+                    if (IsHeaderTag(node.Name) || node.Name == "p")
                     {
                         constr?.Add(node.InnerText);
                     }
