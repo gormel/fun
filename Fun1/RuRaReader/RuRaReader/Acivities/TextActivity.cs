@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -11,7 +12,6 @@ namespace RuRaReader.Acivities
     [Activity]
     public class TextActivity1 : BaseActivity
     {
-        private TextView mTextContainer;
         private TextModel mTextModel;
         private int mCollectedDelta;
 
@@ -21,11 +21,6 @@ namespace RuRaReader.Acivities
 
             mTextModel = await SaveDataManager.Instance.GetText(id);
             ConstructInterface();
-
-            ActionBar.Title = mTextModel.Title ?? "Text";
-            mTextContainer.Text = mTextModel.Text;
-            if (string.IsNullOrWhiteSpace(mTextContainer.Text))
-                mTextContainer.Text = "Здесь текста нет!";
 
             if (SaveDataManager.Instance.ChapterSctolls.ContainsKey(mTextModel.Chapter.Url))
             {
@@ -43,6 +38,8 @@ namespace RuRaReader.Acivities
 
         private void ConstructInterface()
         {
+            var mainContaimer = (LinearLayout)FindViewById(Resource.Id.BaseContainer);
+
             ContentContainer.RemoveAllViews();
 
             var prevBtn = new Button(this);
@@ -50,27 +47,64 @@ namespace RuRaReader.Acivities
             prevBtn.Text = "Previous";
             prevBtn.TextAlignment = TextAlignment.Gravity;
             prevBtn.Click += PrevBtnOnClick;
-            ContentContainer.AddView(prevBtn);
-            
-            mTextContainer = new TextView(this);
-            ContentContainer.AddView(mTextContainer);
+            mainContaimer.AddView(prevBtn, 0);
+
+            if (mTextModel.Text.Count < 1)
+            {
+                var tv = new TextView(this);
+                tv.Text = "Здесь текста нет!";
+                tv.TextSize *= 1.5f;
+                ContentContainer.AddView(tv);
+            }
+
+            foreach (var part in mTextModel.Text)
+            {
+                if (part.Lines.Count < 1)
+                    continue;
+                var headerTv = new TextView(this);
+                headerTv.Text = $"{Environment.NewLine}{part.Header}{Environment.NewLine}";
+                headerTv.TextSize *= 1.5f;
+                headerTv.Gravity = GravityFlags.Center;
+                headerTv.Tag = part;
+                ContentContainer.AddView(headerTv);
+                var textTv = new TextView(this);
+                textTv.Text = $"{string.Join($"{Environment.NewLine}\t", part.Lines)}";
+                textTv.Tag = part;
+                textTv.Click += TextTvOnClick;
+                ContentContainer.AddView(textTv);
+            }
+
+            if (mTextModel.Text.Count > 0)
+            {
+                ActionBar.Title = mTextModel.Text[0].Header;
+            }
 
             var nextBtn = new Button(this);
             nextBtn.Gravity = GravityFlags.Center;
             nextBtn.Text = "Next";
             nextBtn.Click += NextBtnOnClick;
-            ContentContainer.AddView(nextBtn);
+            mainContaimer.AddView(nextBtn);
+        }
+
+        private void TextTvOnClick(object sender, EventArgs eventArgs)
+        {
+            var typedSender = (View)sender;
+            var typedTag = (TextPartModel)typedSender.Tag;
+            ActionBar.Title = typedTag.Header;
         }
 
         private void NextBtnOnClick(object sender, EventArgs eventArgs)
         {
-            if (mTextModel.Chapter.NextModel == null)
-                return;
-
             if (!SaveDataManager.Instance.ReadChapterUrls.Contains(mTextModel.Chapter.Url))
             {
                 SaveDataManager.Instance.ReadChapterUrls.Add(mTextModel.Chapter.Url);
                 SaveDataManager.Instance.Save(FilesDir.AbsolutePath);
+            }
+
+            if (mTextModel.Chapter.NextModel == null)
+            {
+                GoBack();
+                return;
             }
 
             var toStart = new Intent(this, typeof(TextActivity1));
@@ -82,8 +116,11 @@ namespace RuRaReader.Acivities
         private void PrevBtnOnClick(object sender, EventArgs eventArgs)
         {
             if (mTextModel.Chapter.PrevModel == null)
+            {
+                GoBack();
                 return;
-            
+            }
+
             var toStart = new Intent(this, typeof(TextActivity1));
             toStart.PutExtra("Id", mTextModel.Chapter.PrevModel.Id);
             toStart.SetFlags(ActivityFlags.ClearTop);
@@ -100,16 +137,23 @@ namespace RuRaReader.Acivities
                 mCollectedDelta = 0;
                 SaveDataManager.Instance.Save(FilesDir.AbsolutePath);
             }
+
+            var scroller = (ScrollView)FindViewById(Resource.Id.Scroller);
+        }
+
+        private void GoBack()
+        {
+            var toStart = new Intent(this, typeof(VolumeActivity));
+            toStart.PutExtra("Id", mTextModel.Chapter.Volume.Id);
+            toStart.SetFlags(ActivityFlags.ClearTop);
+            StartActivity(toStart);
         }
 
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
             if (keyCode == Keycode.Back)
             {
-                var toStart = new Intent(this, typeof(VolumeActivity));
-                toStart.PutExtra("Id", mTextModel.Chapter.Volume.Id);
-                toStart.SetFlags(ActivityFlags.ClearTop);
-                StartActivity(toStart);
+                GoBack();
                 return true;
             }
             return base.OnKeyDown(keyCode, e);

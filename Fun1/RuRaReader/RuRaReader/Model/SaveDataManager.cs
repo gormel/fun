@@ -78,10 +78,17 @@ namespace RuRaReader.Model
 
         private async Task<string> ReadUrl(string url)
         {
-            var result = await mClient.GetAsync(url);
-            var strResult = await result.Content.ReadAsStringAsync();
-            var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
-            return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
+            try
+            {
+                var result = await mClient.GetAsync(url);
+                var strResult = await result.Content.ReadAsStringAsync();
+                var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
+                return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IReadOnlyList<ProjectModel>> GetProjects()
@@ -174,6 +181,8 @@ namespace RuRaReader.Model
                     foreach (var node in chapters.ChildNodes)
                     {
                         var chapterUrl = node.GetAttributeValue("href", ".");
+                        if (chapterUrl.EndsWith("/i"))
+                            continue;
                         var chapterName = node.ChildNodes[0].InnerText;
 
                         dynamic ch = new ExpandoObject();
@@ -233,12 +242,23 @@ namespace RuRaReader.Model
                 if (textContainer == null)
                     return null;
 
-                dynamic dyn = new ExpandoObject();
-                dyn.textTitle = textContainer.Descendants("h2").FirstOrDefault()?.InnerText;
-                var lines = textContainer.Descendants("p").Select(d => d.InnerText).ToList();
-                dyn.text = lines.Any() ? lines.Aggregate((a, b) => $"{a}\n\r\t{b}") : "";
+                var lst = new List<dynamic>();
+                var text = textContainer.ChildNodes.Where(n => n.GetAttributeValue("id", null) != "i" && n.GetAttributeValue("id", null) != "footnotes");
+                List<string> constr = null;
+                foreach (var node in text)
+                {
+                    if (node.Name == "h2")
+                    {
+                        constr = new List<string>();
+                        lst.Add(constr);
+                    }
+                    if (node.Name == "h2" || node.Name == "p")
+                    {
+                        constr?.Add(node.InnerText);
+                    }
+                }
 
-                var model = new TextModel(dyn);
+                var model = new TextModel(lst);
                 model.Chapter = chapter;
                 mTextCace[chapterId] = model;
             }
