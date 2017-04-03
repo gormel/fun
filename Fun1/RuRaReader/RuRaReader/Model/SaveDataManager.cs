@@ -78,17 +78,11 @@ namespace RuRaReader.Model
 
         private async Task<string> ReadUrl(string url)
         {
-            try
-            {
-                var result = await mClient.GetAsync(url);
-                var strResult = await result.Content.ReadAsStringAsync();
-                var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
-                return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            var result = await mClient.GetAsync(url);
+            var strResult = await result.Content.ReadAsStringAsync();
+            return strResult;
+            //var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
+            //return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
         public async Task<IReadOnlyList<ProjectModel>> GetProjects()
