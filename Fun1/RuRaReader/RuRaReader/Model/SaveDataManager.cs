@@ -172,6 +172,8 @@ namespace RuRaReader.Model
             if (!mChaptersCache.ContainsKey(volumeId))
             {
                 var volume = await GetVolume(volumeId);
+                if (volume == null)
+                    return new List<ChapterModel>();
                 var page = await ReadUrl($"http://ruranobe.ru/r/{volume.Url}");
                 if (page == null)
                     return new List<ChapterModel>();
@@ -235,6 +237,8 @@ namespace RuRaReader.Model
 
         private bool IsHeaderTag(string name) => name.Length == 2 && name[0] == 'h' && char.IsDigit(name[1]);
 
+        private bool IsIllustration(HtmlNode node) => node.Name == "div" && node.GetAttributeValue("class", "<NULL>").EndsWith("illustration");
+
         public async Task<TextModel> GetText(int chapterId)
         {
             if (!mTextCace.ContainsKey(chapterId))
@@ -254,17 +258,22 @@ namespace RuRaReader.Model
 
                 var lst = new List<dynamic>();
                 var text = textContainer.ChildNodes.Where(n => n.GetAttributeValue("id", null) != "i" && n.GetAttributeValue("id", null) != "footnotes");
-                List<string> constr = null;
+                List<RowModel> constr = null;
                 foreach (var node in text)
                 {
                     if (IsHeaderTag(node.Name))
                     {
-                        constr = new List<string>();
+                        constr = new List<RowModel>();
+                        constr.Add(new HeaderRowModel(node.InnerText));
                         lst.Add(constr);
                     }
-                    if (IsHeaderTag(node.Name) || node.Name == "p")
+                    if (node.Name == "p")
                     {
-                        constr?.Add(node.InnerText);
+                        constr?.Add(new TextRowModel(node.InnerText));
+                    }
+                    if (IsIllustration(node))
+                    {
+                        constr?.Add(new ImageRowModel("http:" + node.ChildNodes[0].GetAttributeValue("href", null)));
                     }
                 }
 

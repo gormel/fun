@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using RuRaReader.Model;
@@ -60,26 +62,56 @@ namespace RuRaReader.Acivities
             }
             else
             {
+                HttpClient imageLoader = new HttpClient();
+                bool actionBarTitleSet = false;
                 foreach (var part in mTextModel.Text)
                 {
                     if (part.Lines.Count < 1)
                         continue;
-                    var headerTv = new TextView(this);
-                    headerTv.Text = $"{Environment.NewLine}{part.Header}{Environment.NewLine}";
-                    headerTv.TextSize += 2f;
-                    headerTv.Gravity = GravityFlags.Center;
-                    headerTv.Tag = part;
-                    ContentContainer.AddView(headerTv);
-                    var textTv = new TextView(this);
-                    textTv.Text = $"{string.Join($"{Environment.NewLine}\t", part.Lines)}";
-                    textTv.Tag = part;
-                    textTv.Click += TextTvOnClick;
-                    ContentContainer.AddView(textTv);
-                }
+                    foreach (var line in part.Lines)
+                    {
+                        if (line is HeaderRowModel)
+                        {
+                            var headerTv = new TextView(this);
+                            headerTv.Text = Environment.NewLine + ((HeaderRowModel)line).Text + Environment.NewLine;
+                            headerTv.TextSize += 2f;
+                            headerTv.Gravity = GravityFlags.Center;
+                            headerTv.Tag = part;
+                            ContentContainer.AddView(headerTv);
 
-                if (mTextModel.Text.Count > 0)
-                {
-                    ActionBar.Title = mTextModel.Text[0].Header;
+                            if (!actionBarTitleSet)
+                            {
+                                ActionBar.Title = ((HeaderRowModel) line).Text;
+                                actionBarTitleSet = true;
+                            }
+                        }
+                        if (line is TextRowModel)
+                        {
+                            var textTv = new TextView(this);
+                            textTv.Text = ((TextRowModel)line).Text;
+                            textTv.Tag = part;
+                            ContentContainer.AddView(textTv);
+                        }
+
+                        if (line is ImageRowModel)
+                        {
+                            var lineIv = new ImageView(this);
+                            lineIv.SetScaleType(ImageView.ScaleType.FitXy);
+                            lineIv.SetAdjustViewBounds(true);
+                            var url = ((ImageRowModel) line).Url;
+                            imageLoader.GetAsync(url).ContinueWith(t =>
+                            {
+                                t.Result.Content.ReadAsStreamAsync().ContinueWith(t1 =>
+                                {
+                                    RunOnUiThread(() =>
+                                    {
+                                        lineIv.SetImageBitmap(BitmapFactory.DecodeStream(t1.Result));
+                                    });
+                                });
+                            });
+                            ContentContainer.AddView(lineIv);
+                        }
+                    }
                 }
             }
 
@@ -89,13 +121,6 @@ namespace RuRaReader.Acivities
             nextBtn.Text = "Next";
             nextBtn.Click += NextBtnOnClick;
             mainContaimer.AddView(nextBtn);
-        }
-
-        private void TextTvOnClick(object sender, EventArgs eventArgs)
-        {
-            var typedSender = (View)sender;
-            var typedTag = (TextPartModel)typedSender.Tag;
-            ActionBar.Title = typedTag.Header;
         }
 
         private void NextBtnOnClick(object sender, EventArgs eventArgs)

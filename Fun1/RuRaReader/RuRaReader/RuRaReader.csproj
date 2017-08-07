@@ -87,6 +87,7 @@
     <Compile Include="Model\Bindings\CollectionModel.cs" />
     <Compile Include="Model\ChapterModel.cs" />
     <Compile Include="Model\ProjectModel.cs" />
+    <Compile Include="Model\RowModel.cs" />
     <Compile Include="Model\SaveDataManager.cs" />
     <Compile Include="Model\SerializeCustomers\IntToIntDictionarySerializeCustomer.cs" />
     <Compile Include="Model\TextModel.cs" />
