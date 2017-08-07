@@ -21,6 +21,8 @@ namespace RuRaReader.Acivities
 
             mTextModel = await SaveDataManager.Instance.GetText(id);
             ConstructInterface();
+            if (mTextModel == null)
+                return;
 
             if (SaveDataManager.Instance.ChapterSctolls.ContainsKey(mTextModel.Chapter.Url))
             {
@@ -49,35 +51,38 @@ namespace RuRaReader.Acivities
             prevBtn.Click += PrevBtnOnClick;
             mainContaimer.AddView(prevBtn, 0);
 
-            if (mTextModel.Text.Count < 1)
+            if (mTextModel == null || mTextModel.Text.Count < 1)
             {
                 var tv = new TextView(this);
                 tv.Text = "Здесь текста нет!";
-                tv.TextSize *= 1.5f;
+                tv.TextSize += 2f;
                 ContentContainer.AddView(tv);
             }
-
-            foreach (var part in mTextModel.Text)
+            else
             {
-                if (part.Lines.Count < 1)
-                    continue;
-                var headerTv = new TextView(this);
-                headerTv.Text = $"{Environment.NewLine}{part.Header}{Environment.NewLine}";
-                headerTv.TextSize *= 1.5f;
-                headerTv.Gravity = GravityFlags.Center;
-                headerTv.Tag = part;
-                ContentContainer.AddView(headerTv);
-                var textTv = new TextView(this);
-                textTv.Text = $"{string.Join($"{Environment.NewLine}\t", part.Lines)}";
-                textTv.Tag = part;
-                textTv.Click += TextTvOnClick;
-                ContentContainer.AddView(textTv);
+                foreach (var part in mTextModel.Text)
+                {
+                    if (part.Lines.Count < 1)
+                        continue;
+                    var headerTv = new TextView(this);
+                    headerTv.Text = $"{Environment.NewLine}{part.Header}{Environment.NewLine}";
+                    headerTv.TextSize += 2f;
+                    headerTv.Gravity = GravityFlags.Center;
+                    headerTv.Tag = part;
+                    ContentContainer.AddView(headerTv);
+                    var textTv = new TextView(this);
+                    textTv.Text = $"{string.Join($"{Environment.NewLine}\t", part.Lines)}";
+                    textTv.Tag = part;
+                    textTv.Click += TextTvOnClick;
+                    ContentContainer.AddView(textTv);
+                }
+
+                if (mTextModel.Text.Count > 0)
+                {
+                    ActionBar.Title = mTextModel.Text[0].Header;
+                }
             }
 
-            if (mTextModel.Text.Count > 0)
-            {
-                ActionBar.Title = mTextModel.Text[0].Header;
-            }
 
             var nextBtn = new Button(this);
             nextBtn.Gravity = GravityFlags.Center;
@@ -95,6 +100,12 @@ namespace RuRaReader.Acivities
 
         private void NextBtnOnClick(object sender, EventArgs eventArgs)
         {
+            if (mTextModel == null)
+            {
+                GoBack();
+                return;
+            }
+
             if (!SaveDataManager.Instance.ReadChapterUrls.Contains(mTextModel.Chapter.Url))
             {
                 SaveDataManager.Instance.ReadChapterUrls.Add(mTextModel.Chapter.Url);
@@ -115,7 +126,7 @@ namespace RuRaReader.Acivities
 
         private void PrevBtnOnClick(object sender, EventArgs eventArgs)
         {
-            if (mTextModel.Chapter.PrevModel == null)
+            if (mTextModel == null || mTextModel.Chapter.PrevModel == null)
             {
                 GoBack();
                 return;
@@ -129,6 +140,9 @@ namespace RuRaReader.Acivities
 
         protected override void OnScrollChanged(int lastScroll, int newScroll)
         {
+            if (mTextModel == null)
+                return;
+
             SaveDataManager.Instance.ChapterSctolls[mTextModel.Chapter.Url] = newScroll;
             var delta = Math.Abs(lastScroll - newScroll);
             mCollectedDelta += delta;
@@ -144,7 +158,10 @@ namespace RuRaReader.Acivities
         private void GoBack()
         {
             var toStart = new Intent(this, typeof(VolumeActivity));
-            toStart.PutExtra("Id", mTextModel.Chapter.Volume.Id);
+            var id = -1;
+            if (mTextModel != null)
+                id = mTextModel.Chapter.Volume.Id;
+            toStart.PutExtra("Id", id);
             toStart.SetFlags(ActivityFlags.ClearTop);
             StartActivity(toStart);
         }

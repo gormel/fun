@@ -2,11 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using RuRaReader.Model.SerializeCustomers;
@@ -78,9 +76,17 @@ namespace RuRaReader.Model
 
         private async Task<string> ReadUrl(string url)
         {
-            var result = await mClient.GetAsync(url);
-            var strResult = await result.Content.ReadAsStringAsync();
-            return strResult;
+            try
+            {
+                var result = await mClient.GetAsync(url);
+                var strResult = await result.Content.ReadAsStringAsync();
+                return strResult;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
             //var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
             //return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
@@ -90,6 +96,8 @@ namespace RuRaReader.Model
             if (mProjectsCashe == null)
             {
                 var source = await ReadUrl("http://ruranobe.ru/api/projects");
+                if (source == null)
+                    return new List<ProjectModel>();
                 dynamic des = mSerializer.Deserialize(source);
 
                 mProjectsCashe = new List<ProjectModel>();
@@ -126,6 +134,8 @@ namespace RuRaReader.Model
             if (!mVolumeCashe.ContainsKey(projectId))
             {
                 var source = await ReadUrl($"http://ruranobe.ru/api/projects/{projectId}/volumes");
+                if (source == null)
+                    return new List<VolumeModel>();
                 dynamic des = mSerializer.Deserialize(source);
                 mVolumeCashe[projectId] = new List<VolumeModel>();
                 foreach (var vol in des)
@@ -163,6 +173,8 @@ namespace RuRaReader.Model
             {
                 var volume = await GetVolume(volumeId);
                 var page = await ReadUrl($"http://ruranobe.ru/r/{volume.Url}");
+                if (page == null)
+                    return new List<ChapterModel>();
 
                 var pageDoc = new HtmlDocument();
                 pageDoc.LoadHtml(page);
@@ -229,6 +241,8 @@ namespace RuRaReader.Model
             {
                 var chapter = await GetChapter(chapterId);
                 var raw = await ReadUrl($"http://ruranobe.ru/r/{chapter.Url}");
+                if (raw == null)
+                    return null;
 
                 var htDoc = new HtmlDocument();
                 htDoc.LoadHtml(raw);
