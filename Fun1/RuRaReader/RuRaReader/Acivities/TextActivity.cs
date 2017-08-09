@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
@@ -109,7 +108,17 @@ namespace RuRaReader.Acivities
                                     });
                                 });
                             });
+                            lineIv.Tag = part;
                             ContentContainer.AddView(lineIv);
+                        }
+
+                        if (line is SubtitleRowModel)
+                        {
+                            var textTv = new TextView(this);
+                            textTv.Text = Environment.NewLine + ((SubtitleRowModel) line).Text + Environment.NewLine;
+                            textTv.Tag = part;
+                            textTv.Gravity = GravityFlags.Center;
+                            ContentContainer.AddView(textTv);
                         }
                     }
                 }

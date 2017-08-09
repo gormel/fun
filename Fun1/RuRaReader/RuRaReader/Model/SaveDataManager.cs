@@ -239,6 +239,8 @@ namespace RuRaReader.Model
 
         private bool IsIllustration(HtmlNode node) => node.Name == "div" && node.GetAttributeValue("class", "<NULL>").EndsWith("illustration");
 
+        private bool IsSubtitle(HtmlNode node) => node.Name == "div" && node.GetAttributeValue("class", "<NULL>").EndsWith("subtitle");
+
         public async Task<TextModel> GetText(int chapterId)
         {
             if (!mTextCace.ContainsKey(chapterId))
@@ -274,6 +276,10 @@ namespace RuRaReader.Model
                     if (IsIllustration(node))
                     {
                         constr?.Add(new ImageRowModel("http:" + node.ChildNodes[0].GetAttributeValue("href", null)));
+                    }
+                    if (IsSubtitle(node))
+                    {
+                        constr?.Add(new SubtitleRowModel(node.InnerText));
                     }
                 }
 

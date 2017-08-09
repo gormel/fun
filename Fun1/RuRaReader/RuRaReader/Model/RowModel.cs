@@ -35,4 +35,14 @@ namespace RuRaReader.Model
 
         public string Text { get; private set; }
     }
+
+    public class SubtitleRowModel : RowModel
+    {
+        public SubtitleRowModel(string text)
+        {
+            Text = text;
+        }
+
+        public string Text { get; private set; }
+    }
 }
