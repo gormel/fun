@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.OS;
 using Android.Widget;
 using Atom;
@@ -16,17 +17,29 @@ namespace GoTest
             SetContentView (Resource.Layout.Main);
             var cont = (LinearLayout)FindViewById(Resource.Id.Container);
             var dir = FilesDir.AbsolutePath;
-            var args = new[] {"Name=Common.LS", "IP=192.168.0.1", "Port=55566"};
+            var args = new[] {"Name=Common.LS", "IP=192.168.110.166", "Port=55777"};
             Config.LoadConfig(args, dir,
                 connectResult =>
                 {
                     RunOnUiThread(() =>
                     {
                         var text = new TextView(this);
-                        text.Text = connectResult.ToString();
+                        text.Text = string.Join("\n\r", "Read config: " + connectResult,
+                            Config.Ip, Config.Name, Config.Port, Config.Version);
+
                         cont.AddView(text);
+
+                        var button = new Button(this);
+                        button.Text = "Go go go!";
+                        button.Click += ButtonOnClick;
+                        cont.AddView(button);
                     });
                 });
+        }
+
+        private void ButtonOnClick(object sender, EventArgs eventArgs)
+        {
+            StartActivity(typeof(DbcActivity));
         }
     }
 }

@@ -62,6 +62,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbcActivity.cs" />
+    <Compile Include="DboActivity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,19 +88,19 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Documents\Work\Code\sources\core\Config_20\Config_20.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Projects\Dev\Code\sources\core\Config_20\Config_20.csproj">
       <Project>{d2ce97d0-636d-4a0e-af37-7796c2bcfaf7}</Project>
       <Name>Config_20</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Documents\Work\Code\sources\core\DB_20\DB_20.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Projects\Dev\Code\sources\core\DB_20\DB_20.csproj">
       <Project>{5c3d0c67-4bf6-44ad-a942-7b2f12a22bda}</Project>
       <Name>DB_20</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Documents\Work\Code\sources\core\Helpers_20\Helpers_20.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Projects\Dev\Code\sources\core\Helpers_20\Helpers_20.csproj">
       <Project>{324763f0-b635-4e0f-9d56-9d04d0e44ebe}</Project>
       <Name>Helpers_20</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Documents\Work\Code\sources\core\Net_20\Net_20.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\Projects\Dev\Code\sources\core\Net_20\Net_20.csproj">
       <Project>{cc5ee543-e0ef-45bc-b364-b193495a95f5}</Project>
       <Name>Net_20</Name>
     </ProjectReference>
