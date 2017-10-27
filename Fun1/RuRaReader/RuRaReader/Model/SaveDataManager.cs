@@ -2,11 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using RuRaReader.Model.SerializeCustomers;
@@ -78,10 +76,19 @@ namespace RuRaReader.Model
 
         private async Task<string> ReadUrl(string url)
         {
-            var result = await mClient.GetAsync(url);
-            var strResult = await result.Content.ReadAsStringAsync();
-            var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
-            return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
+            try
+            {
+                var result = await mClient.GetAsync(url);
+                var strResult = await result.Content.ReadAsStringAsync();
+                return strResult;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            //var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
+            //return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
         public async Task<IReadOnlyList<ProjectModel>> GetProjects()
@@ -89,6 +96,8 @@ namespace RuRaReader.Model
             if (mProjectsCashe == null)
             {
                 var source = await ReadUrl("http://ruranobe.ru/api/projects");
+                if (source == null)
+                    return new List<ProjectModel>();
                 dynamic des = mSerializer.Deserialize(source);
 
                 mProjectsCashe = new List<ProjectModel>();
@@ -125,6 +134,8 @@ namespace RuRaReader.Model
             if (!mVolumeCashe.ContainsKey(projectId))
             {
                 var source = await ReadUrl($"http://ruranobe.ru/api/projects/{projectId}/volumes");
+                if (source == null)
+                    return new List<VolumeModel>();
                 dynamic des = mSerializer.Deserialize(source);
                 mVolumeCashe[projectId] = new List<VolumeModel>();
                 foreach (var vol in des)
@@ -161,7 +172,11 @@ namespace RuRaReader.Model
             if (!mChaptersCache.ContainsKey(volumeId))
             {
                 var volume = await GetVolume(volumeId);
+                if (volume == null)
+                    return new List<ChapterModel>();
                 var page = await ReadUrl($"http://ruranobe.ru/r/{volume.Url}");
+                if (page == null)
+                    return new List<ChapterModel>();
 
                 var pageDoc = new HtmlDocument();
                 pageDoc.LoadHtml(page);
@@ -174,6 +189,8 @@ namespace RuRaReader.Model
                     foreach (var node in chapters.ChildNodes)
                     {
                         var chapterUrl = node.GetAttributeValue("href", ".");
+                        if (chapterUrl.EndsWith("/i"))
+                            continue;
                         var chapterName = node.ChildNodes[0].InnerText;
 
                         dynamic ch = new ExpandoObject();
@@ -218,12 +235,20 @@ namespace RuRaReader.Model
             return null;
         }
 
+        private bool IsHeaderTag(string name) => name.Length == 2 && name[0] == 'h' && char.IsDigit(name[1]);
+
+        private bool IsIllustration(HtmlNode node) => node.Name == "div" && node.GetAttributeValue("class", "<NULL>").EndsWith("illustration");
+
+        private bool IsSubtitle(HtmlNode node) => node.Name == "div" && node.GetAttributeValue("class", "<NULL>").EndsWith("subtitle");
+
         public async Task<TextModel> GetText(int chapterId)
         {
             if (!mTextCace.ContainsKey(chapterId))
             {
                 var chapter = await GetChapter(chapterId);
                 var raw = await ReadUrl($"http://ruranobe.ru/r/{chapter.Url}");
+                if (raw == null)
+                    return null;
 
                 var htDoc = new HtmlDocument();
                 htDoc.LoadHtml(raw);
@@ -233,12 +258,32 @@ namespace RuRaReader.Model
                 if (textContainer == null)
                     return null;
 
-                dynamic dyn = new ExpandoObject();
-                dyn.textTitle = textContainer.Descendants("h2").FirstOrDefault()?.InnerText;
-                var lines = textContainer.Descendants("p").Select(d => d.InnerText).ToList();
-                dyn.text = lines.Any() ? lines.Aggregate((a, b) => $"{a}\n\r\t{b}") : "";
+                var lst = new List<dynamic>();
+                var text = textContainer.ChildNodes.Where(n => n.GetAttributeValue("id", null) != "i" && n.GetAttributeValue("id", null) != "footnotes");
+                List<RowModel> constr = null;
+                foreach (var node in text)
+                {
+                    if (IsHeaderTag(node.Name))
+                    {
+                        constr = new List<RowModel>();
+                        constr.Add(new HeaderRowModel(node.InnerText));
+                        lst.Add(constr);
+                    }
+                    if (node.Name == "p")
+                    {
+                        constr?.Add(new TextRowModel(node.InnerText));
+                    }
+                    if (IsIllustration(node))
+                    {
+                        constr?.Add(new ImageRowModel("http:" + node.ChildNodes[0].GetAttributeValue("href", null)));
+                    }
+                    if (IsSubtitle(node))
+                    {
+                        constr?.Add(new SubtitleRowModel(node.InnerText));
+                    }
+                }
 
-                var model = new TextModel(dyn);
+                var model = new TextModel(lst);
                 model.Chapter = chapter;
                 mTextCace[chapterId] = model;
             }

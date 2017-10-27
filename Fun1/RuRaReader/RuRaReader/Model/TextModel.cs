@@ -1,18 +1,21 @@
+using System.Collections.Generic;
 using Java.Lang;
+using Exception = System.Exception;
 
 namespace RuRaReader.Model
 {
     public class TextModel : Object
     {
-        public string Title { get; set; }
-        public string Text { get; set; }
+        public List<TextPartModel> Text { get; } = new List<TextPartModel>();
 
         public ChapterModel Chapter { get; set; }
 
         public TextModel(dynamic data)
         {
-            Title = data.textTitle;
-            Text = data.text;
+            foreach (var pt in data)
+            {
+                 Text.Add(new TextPartModel(pt));
+            }
         }
     }
 }

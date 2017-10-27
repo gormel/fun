@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -15,7 +14,7 @@ namespace RuRaReader.Acivities
     [Activity(Label = "Project")]
     public class ProjectActivity : BaseActivity
     {
-        private ObservableCollection<VolumeModel> mVolumesCollection = new ObservableCollection<VolumeModel>();
+        private readonly ObservableCollection<VolumeModel> mVolumesCollection = new ObservableCollection<VolumeModel>();
 
         protected override async Task StartLoad()
         {
@@ -23,7 +22,6 @@ namespace RuRaReader.Acivities
             var projects = new CollectionBinding<VolumeModel>(mVolumesCollection, ContentContainer, ApplyTemplate);
 
             var proj = await SaveDataManager.Instance.GetProject(id);
-            ActionBar.Title = proj.Title;
             mVolumesCollection.Clear();
             foreach (var vol in await SaveDataManager.Instance.GetVolumes(id))
             {
@@ -37,6 +35,9 @@ namespace RuRaReader.Acivities
                 info.Text = "Томов нет =(";
                 ContentContainer.AddView(info);
             }
+            if (proj == null)
+                return;
+            ActionBar.Title = proj.Title;
         }
 
         private View ApplyTemplate(VolumeModel volumeModel)

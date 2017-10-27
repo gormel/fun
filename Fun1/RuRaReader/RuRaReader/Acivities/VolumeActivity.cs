@@ -25,7 +25,6 @@ namespace RuRaReader.Acivities
             var projects = new CollectionBinding<ChapterModel>(mChaptersCollection, (LinearLayout)FindViewById(Resource.Id.Container), ApplyTemplate);
 
             mVolume = await SaveDataManager.Instance.GetVolume(id);
-            ActionBar.Title = mVolume.Title;
             foreach (var chapter in await SaveDataManager.Instance.GetChapters(id))
             {
                 mChaptersCollection.Add(chapter);
@@ -38,6 +37,9 @@ namespace RuRaReader.Acivities
                 info.Text = "Глав нет =(";
                 ContentContainer.AddView(info);
             }
+            if (mVolume == null)
+                return;
+            ActionBar.Title = mVolume.Title;
         }
 
         private View ApplyTemplate(ChapterModel chapterModel)
@@ -69,7 +71,10 @@ namespace RuRaReader.Acivities
             if (keyCode == Keycode.Back)
             {
                 var toStart = new Intent(this, typeof(ProjectActivity));
-                toStart.PutExtra("Id", mVolume.Project.Id);
+                var id = -1;
+                if (mVolume != null)
+                    id = mVolume.Project.Id;
+                toStart.PutExtra("Id", id);
                 toStart.SetFlags(ActivityFlags.ClearTop);
                 StartActivity(toStart);
                 return true;

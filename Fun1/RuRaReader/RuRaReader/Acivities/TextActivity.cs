@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using RuRaReader.Model;
@@ -11,7 +13,6 @@ namespace RuRaReader.Acivities
     [Activity]
     public class TextActivity1 : BaseActivity
     {
-        private TextView mTextContainer;
         private TextModel mTextModel;
         private int mCollectedDelta;
 
@@ -21,11 +22,8 @@ namespace RuRaReader.Acivities
 
             mTextModel = await SaveDataManager.Instance.GetText(id);
             ConstructInterface();
-
-            ActionBar.Title = mTextModel.Title ?? "Text";
-            mTextContainer.Text = mTextModel.Text;
-            if (string.IsNullOrWhiteSpace(mTextContainer.Text))
-                mTextContainer.Text = "Здесь текста нет!";
+            if (mTextModel == null)
+                return;
 
             if (SaveDataManager.Instance.ChapterSctolls.ContainsKey(mTextModel.Chapter.Url))
             {
@@ -43,6 +41,8 @@ namespace RuRaReader.Acivities
 
         private void ConstructInterface()
         {
+            var mainContaimer = (LinearLayout)FindViewById(Resource.Id.BaseContainer);
+
             ContentContainer.RemoveAllViews();
 
             var prevBtn = new Button(this);
@@ -50,27 +50,106 @@ namespace RuRaReader.Acivities
             prevBtn.Text = "Previous";
             prevBtn.TextAlignment = TextAlignment.Gravity;
             prevBtn.Click += PrevBtnOnClick;
-            ContentContainer.AddView(prevBtn);
-            
-            mTextContainer = new TextView(this);
-            ContentContainer.AddView(mTextContainer);
+            mainContaimer.AddView(prevBtn, 0);
+
+            if (mTextModel == null || mTextModel.Text.Count < 1)
+            {
+                var tv = new TextView(this);
+                tv.Text = "Здесь текста нет!";
+                tv.TextSize += 2f;
+                ContentContainer.AddView(tv);
+            }
+            else
+            {
+                HttpClient imageLoader = new HttpClient();
+                bool actionBarTitleSet = false;
+                foreach (var part in mTextModel.Text)
+                {
+                    if (part.Lines.Count < 1)
+                        continue;
+                    foreach (var line in part.Lines)
+                    {
+                        if (line is HeaderRowModel)
+                        {
+                            var headerTv = new TextView(this);
+                            headerTv.Text = Environment.NewLine + ((HeaderRowModel)line).Text + Environment.NewLine;
+                            headerTv.TextSize += 2f;
+                            headerTv.Gravity = GravityFlags.Center;
+                            headerTv.Tag = part;
+                            ContentContainer.AddView(headerTv);
+
+                            if (!actionBarTitleSet)
+                            {
+                                ActionBar.Title = ((HeaderRowModel) line).Text;
+                                actionBarTitleSet = true;
+                            }
+                        }
+                        if (line is TextRowModel)
+                        {
+                            var textTv = new TextView(this);
+                            textTv.Text = ((TextRowModel)line).Text;
+                            textTv.Tag = part;
+                            ContentContainer.AddView(textTv);
+                        }
+
+                        if (line is ImageRowModel)
+                        {
+                            var lineIv = new ImageView(this);
+                            lineIv.SetScaleType(ImageView.ScaleType.FitXy);
+                            lineIv.SetAdjustViewBounds(true);
+                            var url = ((ImageRowModel) line).Url;
+                            imageLoader.GetAsync(url).ContinueWith(t =>
+                            {
+                                t.Result.Content.ReadAsStreamAsync().ContinueWith(t1 =>
+                                {
+                                    RunOnUiThread(() =>
+                                    {
+                                        lineIv.SetImageBitmap(BitmapFactory.DecodeStream(t1.Result));
+                                    });
+                                });
+                            });
+                            lineIv.Tag = part;
+                            ContentContainer.AddView(lineIv);
+                        }
+
+                        if (line is SubtitleRowModel)
+                        {
+                            var textTv = new TextView(this);
+                            textTv.Text = Environment.NewLine + ((SubtitleRowModel) line).Text + Environment.NewLine;
+                            textTv.Tag = part;
+                            textTv.Gravity = GravityFlags.Center;
+                            ContentContainer.AddView(textTv);
+                        }
+                    }
+                }
+            }
+
 
             var nextBtn = new Button(this);
             nextBtn.Gravity = GravityFlags.Center;
             nextBtn.Text = "Next";
             nextBtn.Click += NextBtnOnClick;
-            ContentContainer.AddView(nextBtn);
+            mainContaimer.AddView(nextBtn);
         }
 
         private void NextBtnOnClick(object sender, EventArgs eventArgs)
         {
-            if (mTextModel.Chapter.NextModel == null)
+            if (mTextModel == null)
+            {
+                GoBack();
                 return;
+            }
 
             if (!SaveDataManager.Instance.ReadChapterUrls.Contains(mTextModel.Chapter.Url))
             {
                 SaveDataManager.Instance.ReadChapterUrls.Add(mTextModel.Chapter.Url);
                 SaveDataManager.Instance.Save(FilesDir.AbsolutePath);
+            }
+
+            if (mTextModel.Chapter.NextModel == null)
+            {
+                GoBack();
+                return;
             }
 
             var toStart = new Intent(this, typeof(TextActivity1));
@@ -81,9 +160,12 @@ namespace RuRaReader.Acivities
 
         private void PrevBtnOnClick(object sender, EventArgs eventArgs)
         {
-            if (mTextModel.Chapter.PrevModel == null)
+            if (mTextModel == null || mTextModel.Chapter.PrevModel == null)
+            {
+                GoBack();
                 return;
-            
+            }
+
             var toStart = new Intent(this, typeof(TextActivity1));
             toStart.PutExtra("Id", mTextModel.Chapter.PrevModel.Id);
             toStart.SetFlags(ActivityFlags.ClearTop);
@@ -92,6 +174,9 @@ namespace RuRaReader.Acivities
 
         protected override void OnScrollChanged(int lastScroll, int newScroll)
         {
+            if (mTextModel == null)
+                return;
+
             SaveDataManager.Instance.ChapterSctolls[mTextModel.Chapter.Url] = newScroll;
             var delta = Math.Abs(lastScroll - newScroll);
             mCollectedDelta += delta;
@@ -100,16 +185,26 @@ namespace RuRaReader.Acivities
                 mCollectedDelta = 0;
                 SaveDataManager.Instance.Save(FilesDir.AbsolutePath);
             }
+
+            var scroller = (ScrollView)FindViewById(Resource.Id.Scroller);
+        }
+
+        private void GoBack()
+        {
+            var toStart = new Intent(this, typeof(VolumeActivity));
+            var id = -1;
+            if (mTextModel != null)
+                id = mTextModel.Chapter.Volume.Id;
+            toStart.PutExtra("Id", id);
+            toStart.SetFlags(ActivityFlags.ClearTop);
+            StartActivity(toStart);
         }
 
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
             if (keyCode == Keycode.Back)
             {
-                var toStart = new Intent(this, typeof(VolumeActivity));
-                toStart.PutExtra("Id", mTextModel.Chapter.Volume.Id);
-                toStart.SetFlags(ActivityFlags.ClearTop);
-                StartActivity(toStart);
+                GoBack();
                 return true;
             }
             return base.OnKeyDown(keyCode, e);
