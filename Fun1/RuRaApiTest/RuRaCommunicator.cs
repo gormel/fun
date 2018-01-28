@@ -14,8 +14,10 @@ namespace RuRaApiTest
 
         public async Task Login()
         {
+            var login = "****";
+            var password = "****";
             var result = await mClient.PostAsync($"{RootUrl}/api/users", 
-                new StringContent("{ \"username\": \"gremkil\", \"password\": \"2147483647\" }", Encoding.UTF8, "application/json"));
+                new StringContent($"{ \"username\": \"{login}\", \"password\": \"{password}\" }", Encoding.UTF8, "application/json"));
             var loginResult = await result.Content.ReadAsStringAsync();
             result = await mClient.GetAsync($@"{RootUrl}/api/projects/9/subprojects?show_hidden=true");
             var stringResult = await result.Content.ReadAsStringAsync();
