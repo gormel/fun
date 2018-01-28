@@ -31,6 +31,12 @@ namespace FunMath.MultiTree
                     var childIndex = coords.Select((c, i) => c * (1 << i)).Sum();
                     Children[childIndex] = child;
                 });
+
+                foreach (var element in Elements)
+                {
+                    Add(element);
+                }
+                Elements.Clear();
             }
 
             public Node CreateParent()
@@ -57,7 +63,7 @@ namespace FunMath.MultiTree
 
             public void Add(T value)
             {
-                if (Elements.Count < 10)
+                if (Children == null && Elements.Count < 10)
                 {
                     Elements.Add(value);
                     return;
@@ -89,17 +95,6 @@ namespace FunMath.MultiTree
                     if (box.Intersection(child.NodeBox) != null)
                         child.Query(result, box);
                 }
-            }
-
-            private static bool Intersects(MultiVector pos, double radius, MultiBox box)
-            {
-                bool topInSphere = false;
-                DeepEnumerate(new int[pos.Dimentions], 0, coords =>
-                {
-                    var top = box.Position + new MultiVector(coords.Select((c, i) => box.Size[i] * c).ToArray(), false);
-                    topInSphere = topInSphere || (top - pos).LenghtSq < radius * radius;
-                });
-                return box.Contains(pos) || topInSphere;
             }
         }
 
