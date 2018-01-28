@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunMath.MultiTree
 {
@@ -75,11 +73,11 @@ namespace FunMath.MultiTree
                 } 
             }
 
-            public void Query(List<T> result, MultiVector pos, double rad)
+            public void Query(List<T> result, MultiBox box)
             {
                 foreach (var element in Elements)
                 {
-                    if (Intersects(pos, rad, element.Box))
+                    if (box.Intersection(element.Box) != null)
                         result.Add(element);
                 }
 
@@ -88,8 +86,8 @@ namespace FunMath.MultiTree
 
                 foreach (var child in Children)
                 {
-                    if (Intersects(pos, rad, child.NodeBox))
-                        child.Query(result, pos, rad);
+                    if (box.Intersection(child.NodeBox) != null)
+                        child.Query(result, box);
                 }
             }
 
@@ -125,13 +123,13 @@ namespace FunMath.MultiTree
             mRoot.Add(value);
         }
 
-        public List<T> Query(MultiVector pos, double radius)
+        public List<T> Query(MultiBox box)
         {
             var result = new List<T>();
             if (mRoot == null)
                 return result;
 
-            mRoot.Query(result, pos, radius);
+            mRoot.Query(result, box);
             return result;
         }
     }
