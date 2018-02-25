@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database Name="sh_devices" EntityNamespace="ShDeviceContext" ContextNamespace="ShDeviceContext" Class="ShDeviceDataContext" xmlns:ed="http://devart.com/schemas/EntityDeveloper/1.0" ed:Guid="c0ebbdbe-cd32-4240-ab3b-eaf7632a5894" Provider="Devart.Data.MySql.Linq.Provider.MySqlDataProvider, Devart.Data.MySql.Linq" Extended="true" xmlns="http://schemas.devart.com/linqconnect/mapping">
+  <Connection Mode="ConnectionString" ConnectionString="User Id=root;Password=2147483647;Host=localhost;Database=sh_devices;Persist Security Info=True" Provider="Devart.Data.MySql" />
+  <Table Name="sh_devices.devices" Member="Devices">
+    <Type Name="Device" ed:Guid="363b4d0a-99ec-4264-82b7-683f18e1a222">
+      <Column Name="id" Member="Id" Type="System.Int32" AutoSync="OnInsert" DbType="INT(11) NOT NULL AUTO_INCREMENT" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" UpdateCheck="Always" Precision="11" ed:ValidateRequired="true" ed:Guid="b6935d3d-9f9c-4ae2-b11a-60a768ec2f3e" />
+      <Column Name="type" Member="Type" Type="System.Int32" DbType="INT(11) NOT NULL" CanBeNull="false" UpdateCheck="Never" Precision="11" ed:ValidateRequired="true" ed:Guid="5eff725d-2128-42ef-9741-99c7389153a4" />
+      <Column Name="mac" Member="Mac" Type="System.String" DbType="VARCHAR(45) NULL" CanBeNull="true" UpdateCheck="Never" MaxLength="45" Unicode="true" ed:ValidateMaxLength="45" ed:ValidateRequired="false" ed:Guid="34c7e200-ea4a-484e-8e25-048adb19860a" />
+      <Column Name="name" Member="Name" Type="System.String" DbType="VARCHAR(45) NULL" CanBeNull="true" UpdateCheck="Never" MaxLength="45" Unicode="true" ed:ValidateMaxLength="45" ed:ValidateRequired="false" ed:Guid="7bb3239d-4a65-4c11-a31b-536ef233cfca" />
+      <Column Name="tag" Member="Tag" Type="System.String" DbType="VARCHAR(45) NULL" CanBeNull="true" UpdateCheck="Never" MaxLength="45" Unicode="true" ed:ValidateMaxLength="45" ed:ValidateRequired="false" ed:Guid="704b5028-df2a-4124-b9ad-2c157cf6b093" />
+    </Type>
+  </Table>
+</Database>
