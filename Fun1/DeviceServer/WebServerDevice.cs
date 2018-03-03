@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Net.Sockets;
 using ShDeviceContext;
 using ShPackages;
@@ -17,14 +16,31 @@ namespace DeviceServer
             switch (package.Type)
             {
                 case PackageType.DeviceList:
-                    Send(new Package(
-                        PackageType.DeviceList, 
-                        new DeviceListPackageData(
-                            Program.Devices.Select(d => new DeviceListEntity(
-                                d.Name, 
-                                d.Tag, 
-                                d.Commands.Select(c => new PossibleActionEntity(c.CommandType, c.Name)).ToArray())).ToArray()
-                        )));
+                    var pack = new Package(PackageType.DeviceList);
+                    var devices = new CustomObject[Program.Devices.Count];
+                    pack.Data.Add("devices", devices);
+                    int i = 0;
+                    foreach (var device in Program.Devices)
+                    {
+                        var deviceDescription = new CustomObject();
+                        deviceDescription["name"] = device.Name;
+                        deviceDescription["type"] = (int) device.Type;
+                        deviceDescription["tag"] = device.Tag;
+
+                        var commands = new CustomObject[device.Commands.Count];
+                        deviceDescription["commands"] = commands;
+                        int j = 0;
+                        foreach (var command in device.Commands)
+                        {
+                            var commandDescription = new CustomObject();
+                            commandDescription["name"] = command.Name;
+                            commandDescription["type"] = (int) command.CommandType;
+                            commands[j++] = commandDescription;
+                        }
+
+                        devices[i++] = deviceDescription;
+                    }
+                    Send(new Package(PackageType.DeviceList));
                     break;
             }
         }

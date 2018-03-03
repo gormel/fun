@@ -31,7 +31,7 @@ namespace DeviceServer
 
         public void Switch()
         {
-            Send(new Package(PackageType.Switch, null));
+            Send(new Package(PackageType.Switch));
         }
 
         public override void ProcessPackage(Package package)
