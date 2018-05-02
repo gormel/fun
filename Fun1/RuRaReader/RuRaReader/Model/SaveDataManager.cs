@@ -81,14 +81,11 @@ namespace RuRaReader.Model
                 var result = await mClient.GetAsync(url);
                 var strResult = await result.Content.ReadAsStringAsync();
                 return strResult;
-
             }
             catch (Exception)
             {
                 return null;
             }
-            //var regex = new Regex(@"\\[uU]([0-9A-Fa-f]{4})");
-            //return regex.Replace(strResult, m => ((char)int.Parse(m.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
         public async Task<IReadOnlyList<ProjectModel>> GetProjects()
@@ -241,6 +238,11 @@ namespace RuRaReader.Model
 
         private bool IsSubtitle(HtmlNode node) => node.Name == "div" && node.GetAttributeValue("class", "<NULL>").EndsWith("subtitle");
 
+        private List<RefferenceModel> ResolveRefferences(string html)
+        {
+            return new List<RefferenceModel>();
+        } 
+
         public async Task<TextModel> GetText(int chapterId)
         {
             if (!mTextCace.ContainsKey(chapterId))
@@ -271,7 +273,9 @@ namespace RuRaReader.Model
                     }
                     if (node.Name == "p")
                     {
-                        constr?.Add(new TextRowModel(node.InnerText));
+                        var toAdd = new TextRowModel(node.InnerText);
+                        toAdd.Refferences.AddRange(ResolveRefferences(node.InnerHtml));
+                        constr?.Add(toAdd);
                     }
                     if (IsIllustration(node))
                     {

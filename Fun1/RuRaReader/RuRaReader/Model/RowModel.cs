@@ -1,7 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RuRaReader.Model
 {
+    public class RefferenceModel
+    {
+        public int StartIndex { get; set; }
+        public int Lenght { get; set; }
+        public string Text { get; set; }
+    }
+
     public abstract class RowModel : Object
     {
     }
@@ -14,6 +22,7 @@ namespace RuRaReader.Model
         }
 
         public string Text { get; private set; }
+        public List<RefferenceModel> Refferences { get; } = new List<RefferenceModel>(); 
     }
 
     public class ImageRowModel : RowModel

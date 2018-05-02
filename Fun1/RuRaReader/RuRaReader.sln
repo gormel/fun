@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuRaReader", "RuRaReader\Ru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuRaNugetPackages", "..\RuRaNugetPackages\RuRaNugetPackages.csproj", "{3BEBE94B-315B-4C66-A8CA-4BA741EA3AD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaoTester", "DaoTester\DaoTester.csproj", "{88967723-9B0C-42C4-B2A4-C4262ECB46D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{3BEBE94B-315B-4C66-A8CA-4BA741EA3AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BEBE94B-315B-4C66-A8CA-4BA741EA3AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BEBE94B-315B-4C66-A8CA-4BA741EA3AD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88967723-9B0C-42C4-B2A4-C4262ECB46D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88967723-9B0C-42C4-B2A4-C4262ECB46D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88967723-9B0C-42C4-B2A4-C4262ECB46D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88967723-9B0C-42C4-B2A4-C4262ECB46D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
